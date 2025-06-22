@@ -1,0 +1,253 @@
+{
+  "name": "git-work-summary",
+  "displayName": "Git Work Summary",
+  "description": "定时提取 git 变更并生成工作总结",
+  "version": "1.0.0",
+  "publisher": "Cann",
+  "author": {
+    "name": "Git Work Summary Team"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/git-work-summary"
+  },
+  "keywords": [
+    "git",
+    "work",
+    "summary",
+    "report",
+    "ai",
+    "daily",
+    "weekly",
+    "commit",
+    "analysis"
+  ],
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitWorkSummary.generateDailyReport",
+        "title": "Generate Today's Daily Report",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.generateDailyReportForDate",
+        "title": "Generate Daily Report for Specific Date",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.showUncommittedSummary",
+        "title": "Show Uncommitted Changes Summary",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.configure",
+        "title": "Configure Settings",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.viewHistory",
+        "title": "View Report History",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.generateWeeklyReport",
+        "title": "Generate Weekly Report",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.generateWeeklyReportForDate",
+        "title": "Generate Weekly Report for Period",
+        "category": "Git Work Summary"
+      },
+
+      {
+        "command": "gitWorkSummary.resetProcessedCommits",
+        "title": "Reset Processed Commits",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.debugGitStatus",
+        "title": "Debug Git Status",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.testAI",
+        "title": "Test AI Configuration",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.printPrompts",
+        "title": "Show AI Prompts",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.showCurrentPrompts",
+        "title": "Show Current Prompts",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.debugMultiProject",
+        "title": "Debug Multi-Project Configuration",
+        "category": "Git Work Summary"
+      },
+      {
+        "command": "gitWorkSummary.quickSetupMultiProject",
+        "title": "Quick Setup Multi-Project",
+        "category": "Git Work Summary"
+      }
+    ],
+    "configuration": {
+      "title": "Git Work Summary",
+      "properties": {
+        "gitWorkSummary.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用定时工作总结"
+        },
+        "gitWorkSummary.interval": {
+          "type": "number",
+          "default": 60,
+          "description": "定时间隔（分钟）"
+        },
+        "gitWorkSummary.reportUrl": {
+          "type": "string",
+          "default": "",
+          "description": "上报接口 URL"
+        },
+        "gitWorkSummary.reportHeaders": {
+          "type": "object",
+          "default": {},
+          "description": "上报接口请求头"
+        },
+        "gitWorkSummary.enableReporting": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用上报功能"
+        },
+        "gitWorkSummary.includeUncommittedChanges": {
+          "type": "boolean",
+          "default": false,
+          "description": "在日报中包含未提交的变更内容"
+        },
+        "gitWorkSummary.aiProvider": {
+          "type": "string",
+          "enum": ["deepseek", "openai"],
+          "default": "deepseek",
+          "description": "AI 服务提供商"
+        },
+        "gitWorkSummary.aiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "AI API Key"
+        },
+        "gitWorkSummary.aiBaseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "AI API Base URL (可选，使用默认值)"
+        },
+        "gitWorkSummary.aiModel": {
+          "type": "string",
+          "default": "",
+          "description": "AI 模型名称 (可选，使用默认值)"
+        },
+        "gitWorkSummary.aiTimeout": {
+          "type": "number",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300,
+          "description": "AI 服务调用超时时间（秒），推理模型建议设置更长时间"
+        },
+        "gitWorkSummary.customPrompts": {
+          "type": "object",
+          "default": {},
+          "description": "自定义AI提示词配置，支持覆盖默认提示词"
+        },
+        "gitWorkSummary.enablePromptLogging": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用提示词日志输出，在控制台显示实际发送给AI的提示词"
+        },
+        "gitWorkSummary.maxCommits": {
+          "type": "number",
+          "default": 50,
+          "description": "每次处理的最大 commit 数量"
+        },
+        "gitWorkSummary.onlyMyCommits": {
+          "type": "boolean",
+          "default": true,
+          "description": "只分析当前用户的提交"
+        },
+        "gitWorkSummary.scanAllBranches": {
+          "type": "boolean",
+          "default": true,
+          "description": "扫描所有本地分支的提交（适用于多分支开发）"
+        },
+
+        "gitWorkSummary.enableWeeklyReport": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用每周工作报告"
+        },
+        "gitWorkSummary.dailyReportTime": {
+          "type": "string",
+          "default": "18:00",
+          "description": "每日报告生成时间（HH:MM 格式）"
+        },
+        "gitWorkSummary.weeklyReportDay": {
+          "type": "number",
+          "default": 5,
+          "description": "每周报告生成日期（0=周日, 1=周一, ..., 6=周六）"
+        },
+        "gitWorkSummary.weekStartDay": {
+          "type": "number",
+          "default": 1,
+          "enum": [0, 1, 2, 3, 4, 5, 6],
+          "enumDescriptions": ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+          "description": "周报起始日期（0=周日, 1=周一, ..., 6=周六）。周一到周五：设为1；周五到周四：设为5"
+        },
+        "gitWorkSummary.enableMultiProject": {
+          "type": "boolean",
+          "default": false,
+          "description": "启用多项目功能，合并分析多个项目的代码变更（可选）"
+        },
+        "gitWorkSummary.projectPaths": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "多项目路径列表（绝对路径），启用后所有报告将合并分析这些项目"
+        },
+        "gitWorkSummary.projectNames": {
+          "type": "object",
+          "default": {},
+          "description": "项目路径到项目名称的映射，用于在报告中显示友好的项目名称"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "18.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "simple-git": "^3.20.0"
+  }
+} 

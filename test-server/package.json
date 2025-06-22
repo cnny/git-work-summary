@@ -1,0 +1,25 @@
+{
+  "name": "git-work-summary-test-server",
+  "version": "1.0.0",
+  "description": "Test server for receiving Git Work Summary reports",
+  "main": "simple-server.js",
+  "scripts": {
+    "start": "node simple-server.js",
+    "dev": "nodemon simple-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "test",
+    "server",
+    "git",
+    "work-summary"
+  ],
+  "author": "Git Work Summary",
+  "license": "MIT"
+} 
