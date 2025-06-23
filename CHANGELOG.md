@@ -2,6 +2,11 @@
 
 All notable changes to the "Git Work Summary" extension will be documented in this file.
 
+## [1.1.4] - 2025-06-23
+
+### Fixed
+- 🔧 修复 Report History 列表按钮点击失效BUG
+
 ## [1.1.3] - 2025-06-23
 
 ### Fixed

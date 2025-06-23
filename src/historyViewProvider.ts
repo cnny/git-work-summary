@@ -390,29 +390,29 @@ export class HistoryViewProvider {
         const vscode = acquireVsCodeApi();
 
         function refresh() {
-            log('刷新按钮被点击');
+            console.log('刷新按钮被点击');
             vscode.postMessage({ command: 'refresh' });
         }
 
         function exportData() {
-            log('导出按钮被点击');
+            console.log('导出按钮被点击');
             vscode.postMessage({ command: 'export' });
         }
 
         function deleteSummary(id) {
-            log('删除按钮被点击:', id);
+            console.log('删除按钮被点击:', id);
             // 移除重复的确认对话框，因为后端已经有确认了
             vscode.postMessage({ command: 'delete', id: id });
         }
 
         function viewDetails(id) {
-            log('查看详情按钮被点击:', id);
+            console.log('查看详情按钮被点击:', id);
             vscode.postMessage({ command: 'viewDetails', id: id });
         }
 
         // 页面加载完成后的回调
         window.addEventListener('load', function() {
-            log('历史记录页面加载完成');
+            console.log('历史记录页面加载完成');
         });
     </script>
 </body>
