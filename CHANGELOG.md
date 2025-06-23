@@ -2,6 +2,25 @@
 
 All notable changes to the "Git Work Summary" extension will be documented in this file.
 
+## [1.1.1] - 2024-01-23
+
+### Fixed
+- 🔧 修复定时任务不生效的问题
+- ⚡ 优化扩展激活事件，从 "*" 改为更精确的激活条件
+- 🚀 添加 "onStartupFinished" 激活事件，确保定时任务在启动后正常工作
+- 📈 提升 VS Code 启动性能，避免不必要的资源占用
+
+### Changed
+- 🎯 改进激活事件配置，仅在需要时激活扩展
+- 🔄 保留所有功能完整性的同时优化性能表现
+
+### Technical Details
+- 移除了影响性能的 "*" 全局激活事件
+- 添加了针对性的激活条件：
+  - `onStartupFinished` - 启动完成后激活
+  - `onCommand:*` - 命令执行时激活
+  - `workspaceContains:.git` - Git 仓库工作区激活
+
 ## [1.0.0] - 2024-01-20
 
 ### Added

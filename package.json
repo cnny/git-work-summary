@@ -2,14 +2,14 @@
   "name": "git-work-summary",
   "displayName": "Git Work Summary",
   "description": "定时提取 git 变更并生成工作总结",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "publisher": "Cann",
   "author": {
-    "name": "Git Work Summary Team"
+    "name": "cnny"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/example/git-work-summary"
+    "url": "https://github.com/cnny/git-work-summary"
   },
   "keywords": [
     "git",
@@ -29,7 +29,22 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished",
+    "onCommand:gitWorkSummary.generateDailyReport",
+    "onCommand:gitWorkSummary.generateDailyReportForDate",
+    "onCommand:gitWorkSummary.showUncommittedSummary",
+    "onCommand:gitWorkSummary.configure",
+    "onCommand:gitWorkSummary.viewHistory",
+    "onCommand:gitWorkSummary.generateWeeklyReport",
+    "onCommand:gitWorkSummary.generateWeeklyReportForDate",
+    "onCommand:gitWorkSummary.resetProcessedCommits",
+    "onCommand:gitWorkSummary.debugGitStatus",
+    "onCommand:gitWorkSummary.testAI",
+    "onCommand:gitWorkSummary.printPrompts",
+    "onCommand:gitWorkSummary.showCurrentPrompts",
+    "onCommand:gitWorkSummary.debugMultiProject",
+    "onCommand:gitWorkSummary.quickSetupMultiProject",
+    "workspaceContains:.git"
   ],
   "main": "./out/extension.js",
   "contributes": {
