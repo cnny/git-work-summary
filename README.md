@@ -207,12 +207,6 @@ Ctrl+Shift+P → Git Work Summary: Show AI Prompts
 - 支持导出历史数据
 - 本地存储最近100条记录
 
----
-
-🎉 **恭喜！** 您已完成 Git Work Summary 的配置。扩展现在会自动分析您的代码变更并生成智能工作总结。
-
-如有问题，请查看完整的 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) 或在[Github](https://github.com/cnny/git-work-summary)提交 Issue。 
-
 ## 📋 查看运行日志
 
 如果需要查看扩展的详细运行日志，可以通过以下方式：
@@ -234,3 +228,9 @@ Ctrl+Shift+P → Git Work Summary: Show AI Prompts
 - 🤖 AI分析结果和耗时
 - ❌ 错误和警告信息
 - 📊 项目统计和提交数据
+
+---
+
+🎉 **恭喜！** 您已完成 Git Work Summary 的配置。扩展现在会自动分析您的代码变更并生成智能工作总结。
+
+如有问题，请查看完整的 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) 或在[Github](https://github.com/cnny/git-work-summary)提交 Issue。 
