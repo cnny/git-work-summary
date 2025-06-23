@@ -2,7 +2,11 @@
 
 All notable changes to the "Git Work Summary" extension will be documented in this file.
 
-## [1.1.1] - 2024-01-23
+## [1.1.2] - 2025-06-23
+
+### nothing
+
+## [1.1.1] - 2025-06-23
 
 ### Fixed
 - 🔧 修复定时任务不生效的问题
@@ -21,7 +25,7 @@ All notable changes to the "Git Work Summary" extension will be documented in th
   - `onCommand:*` - 命令执行时激活
   - `workspaceContains:.git` - Git 仓库工作区激活
 
-## [1.0.0] - 2024-01-20
+## [1.0.0] - 2025-06-20
 
 ### Added
 - 🎉 初始版本发布
