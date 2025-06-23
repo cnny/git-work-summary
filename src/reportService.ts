@@ -1,6 +1,8 @@
+import * as vscode from 'vscode';
 import axios from 'axios';
 import { WorkSummary } from './gitWorkSummaryManager';
 import { ConfigurationManager } from './configurationManager';
+import { log } from './logger';
 
 export class ReportService {
     private reportUrl: string = '';
@@ -27,7 +29,7 @@ export class ReportService {
         
         // 检查是否配置了上报URL
         if (!this.reportUrl) {
-            console.log('上报接口未配置，跳过上报');
+            log('上报接口未配置，跳过上报');
             return;
         }
 
@@ -48,7 +50,7 @@ export class ReportService {
                 throw new Error(`上报失败，状态码: ${response.status}, 响应: ${JSON.stringify(response.data)}`);
             }
 
-            console.log(`工作总结上报成功: ${workSummary.id}`);
+            log(`工作总结上报成功: ${workSummary.id}`);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 const statusCode = error.response?.status;

@@ -33,9 +33,12 @@ const aiSummaryService_1 = require("./aiSummaryService");
 const reportService_1 = require("./reportService");
 const workSummaryStorage_1 = require("./workSummaryStorage");
 const multiProjectManager_1 = require("./multiProjectManager");
+const logger_1 = require("./logger");
 let gitWorkSummaryManager;
 function activate(context) {
-    console.log('Git Work Summary 扩展已激活');
+    // 初始化日志系统
+    (0, logger_1.initializeLogger)();
+    (0, logger_1.log)('Git Work Summary 扩展已激活');
     // 初始化管理器
     const configManager = new configurationManager_1.ConfigurationManager();
     const gitAnalyzer = new gitAnalyzer_1.GitAnalyzer();
@@ -77,14 +80,14 @@ function activate(context) {
                 vscode.window.showErrorMessage('未找到工作区');
                 return;
             }
-            console.log('\n📝 检查未提交的变更...');
+            (0, logger_1.log)('\n📝 检查未提交的变更...');
             const uncommittedChanges = await gitAnalyzer.getUncommittedChanges(workspaceFolder.uri.fsPath);
             const hasChanges = uncommittedChanges.staged.length > 0 || uncommittedChanges.modified.length > 0;
             if (!hasChanges) {
                 vscode.window.showInformationMessage('当前没有未提交的变更');
                 return;
             }
-            console.log(`发现 ${uncommittedChanges.staged.length} 个已暂存文件, ${uncommittedChanges.modified.length} 个已修改文件`);
+            (0, logger_1.log)(`发现 ${uncommittedChanges.staged.length} 个已暂存文件, ${uncommittedChanges.modified.length} 个已修改文件`);
             const summary = await aiService.generateUncommittedSummary(uncommittedChanges);
             if (summary) {
                 const action = await vscode.window.showInformationMessage(`未提交变更摘要: ${summary}`, { modal: true }, '查看详细变更');
@@ -117,7 +120,7 @@ function activate(context) {
             }
         }
         catch (error) {
-            console.error('获取未提交变更摘要失败:', error);
+            (0, logger_1.log)(`获取未提交变更摘要失败: ${error}`);
             vscode.window.showErrorMessage(`获取未提交变更摘要失败: ${error}`);
         }
     });
@@ -127,13 +130,13 @@ function activate(context) {
     const generateWeeklyReportForDateCommand = vscode.commands.registerCommand('gitWorkSummary.generateWeeklyReportForDate', () => gitWorkSummaryManager.generateWeeklyReportForDate());
     const resetProcessedCommitsCommand = vscode.commands.registerCommand('gitWorkSummary.resetProcessedCommits', async () => {
         try {
-            console.log('\n🔄 执行重置已处理提交记录...');
+            (0, logger_1.log)('\n🔄 执行重置已处理提交记录...');
             gitAnalyzer.resetLastProcessedCommit();
-            console.log('✅ 重置完成，下次分析将处理所有提交');
+            (0, logger_1.log)('✅ 重置完成，下次分析将处理所有提交');
             vscode.window.showInformationMessage('已重置处理记录，下次分析将处理所有提交');
         }
         catch (error) {
-            console.error('重置失败:', error);
+            (0, logger_1.log)(`重置失败: ${error}`);
             vscode.window.showErrorMessage(`重置失败: ${error}`);
         }
     });
@@ -145,92 +148,113 @@ function activate(context) {
                 return;
             }
             const config = configManager.getConfiguration();
-            console.log('\n🔍 Git状态调试信息:');
-            console.log('====================================');
+            (0, logger_1.log)('\n🔍 Git状态调试信息:');
+            (0, logger_1.log)('====================================');
             // 基本信息
-            console.log(`📁 工作区: ${workspaceFolder.uri.fsPath}`);
-            console.log(`⚙️ 当前配置:`);
-            console.log(`  ├─ 只分析我的提交: ${config.onlyMyCommits}`);
-            console.log(`  ├─ 扫描所有分支: ${config.scanAllBranches}`);
-            console.log(`  └─ 最大提交数: ${config.maxCommits}`);
+            (0, logger_1.log)(`📁 工作区: ${workspaceFolder.uri.fsPath}`);
+            (0, logger_1.log)(`⚙️ 当前配置:`);
+            (0, logger_1.log)(`  ├─ 只分析我的提交: ${config.onlyMyCommits}`);
+            (0, logger_1.log)(`  ├─ 扫描所有分支: ${config.scanAllBranches}`);
+            (0, logger_1.log)(`  └─ 最大提交数: ${config.maxCommits}`);
             // 获取分支信息
             try {
                 const branchInfo = await gitAnalyzer.getBranchInfo(workspaceFolder.uri.fsPath);
-                console.log(`\n🌿 分支信息:`);
-                console.log(`  ├─ 当前分支: ${branchInfo.current}`);
-                console.log(`  └─ 所有分支: ${branchInfo.all.join(', ')}`);
+                (0, logger_1.log)(`\n🌿 分支信息:`);
+                (0, logger_1.log)(`  ├─ 当前分支: ${branchInfo.current}`);
+                (0, logger_1.log)(`  └─ 本地分支: ${branchInfo.all.join(', ')}`);
             }
             catch (error) {
-                console.log(`❌ 获取分支信息失败: ${error}`);
+                (0, logger_1.log)(`❌ 获取分支信息失败: ${error}`);
             }
-            // 获取工作区状态
+            // 获取最近的提交
             try {
-                const status = await gitAnalyzer.getWorkspaceStatus(workspaceFolder.uri.fsPath);
-                console.log(`\n📊 工作区状态:`);
-                console.log(`  ├─ 已暂存: ${status.staged.length} 个文件`);
-                console.log(`  ├─ 已修改: ${status.modified.length} 个文件`);
-                console.log(`  └─ 未跟踪: ${status.untracked.length} 个文件`);
-                if (status.staged.length > 0) {
-                    console.log(`    已暂存文件: ${status.staged.join(', ')}`);
-                }
-                if (status.modified.length > 0) {
-                    console.log(`    已修改文件: ${status.modified.join(', ')}`);
-                }
-                if (status.untracked.length > 0) {
-                    console.log(`    未跟踪文件: ${status.untracked.join(', ')}`);
-                }
-            }
-            catch (error) {
-                console.log(`❌ 获取工作区状态失败: ${error}`);
-            }
-            // 获取最近提交
-            try {
-                const recentCommits = await gitAnalyzer.getRecentCommits(workspaceFolder.uri.fsPath, 5, config.onlyMyCommits, config.scanAllBranches);
-                console.log(`\n📝 最近提交 (${recentCommits.length} 个):`);
-                recentCommits.forEach((commit, index) => {
-                    console.log(`  ${index + 1}. ${commit.hash.substring(0, 8)} - ${commit.message} (${commit.author})`);
+                const today = new Date();
+                const dayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+                const commits = await gitAnalyzer.getCommitsByDateRange(workspaceFolder.uri.fsPath, dayStart, today, false, true);
+                (0, logger_1.log)(`\n📝 最近提交:`);
+                commits.slice(0, 5).forEach((commit, index) => {
+                    (0, logger_1.log)(`  ${index + 1}. ${commit.hash.substring(0, 8)} - ${commit.message} (${commit.author})`);
                 });
             }
             catch (error) {
-                console.log(`❌ 获取最近提交失败: ${error}`);
+                (0, logger_1.log)(`❌ 获取提交信息失败: ${error}`);
             }
-            console.log('====================================');
-            vscode.window.showInformationMessage('Git状态调试信息已输出到控制台');
+            // 获取未提交的变更
+            try {
+                const uncommittedChanges = await gitAnalyzer.getUncommittedChanges(workspaceFolder.uri.fsPath);
+                (0, logger_1.log)(`\n📋 未提交变更:`);
+                (0, logger_1.log)(`  ├─ 已暂存: ${uncommittedChanges.staged.length} 个文件`);
+                (0, logger_1.log)(`  └─ 已修改: ${uncommittedChanges.modified.length} 个文件`);
+                if (uncommittedChanges.staged.length > 0) {
+                    (0, logger_1.log)(`\n  已暂存的文件:`);
+                    uncommittedChanges.staged.forEach(change => {
+                        (0, logger_1.log)(`    - ${change.file} (${change.status})`);
+                    });
+                }
+                if (uncommittedChanges.modified.length > 0) {
+                    (0, logger_1.log)(`\n  已修改的文件:`);
+                    uncommittedChanges.modified.forEach(change => {
+                        (0, logger_1.log)(`    - ${change.file} (${change.status})`);
+                    });
+                }
+            }
+            catch (error) {
+                (0, logger_1.log)(`❌ 获取未提交变更失败: ${error}`);
+            }
+            // 检查是否是Git仓库
+            try {
+                const fs = require('fs');
+                const path = require('path');
+                const gitPath = path.join(workspaceFolder.uri.fsPath, '.git');
+                const isGitRepo = fs.existsSync(gitPath);
+                (0, logger_1.log)(`\n📦 Git仓库状态: ${isGitRepo ? '✅ 是Git仓库' : '❌ 不是Git仓库'}`);
+            }
+            catch (error) {
+                (0, logger_1.log)(`❌ 检查Git仓库状态失败: ${error}`);
+            }
+            (0, logger_1.log)('\n====================================');
+            (0, logger_1.log)('🔍 调试信息收集完成');
+            // 显示输出通道
+            (0, logger_1.showLogs)();
         }
         catch (error) {
-            console.error('调试失败:', error);
+            (0, logger_1.log)(`调试失败: ${error}`);
             vscode.window.showErrorMessage(`调试失败: ${error}`);
         }
     });
+    // 注册查看日志命令
+    const showLogsCommand = vscode.commands.registerCommand('gitWorkSummary.showLogs', () => {
+        (0, logger_1.showLogs)();
+    });
     const testAICommand = vscode.commands.registerCommand('gitWorkSummary.testAI', async () => {
         try {
-            console.log('\n🧪 测试AI连接...');
+            (0, logger_1.log)('\n🧪 测试AI连接...');
             const success = await aiService.testConnection();
             if (success) {
-                console.log('✅ AI连接测试成功');
+                (0, logger_1.log)('✅ AI连接测试成功');
                 vscode.window.showInformationMessage('AI连接测试成功');
             }
             else {
-                console.log('❌ AI连接测试失败');
+                (0, logger_1.log)('❌ AI连接测试失败');
                 vscode.window.showErrorMessage('AI连接测试失败，请检查配置');
             }
         }
         catch (error) {
-            console.error('AI连接测试失败:', error);
+            (0, logger_1.log)(`AI连接测试失败: ${error}`);
             vscode.window.showErrorMessage(`AI连接测试失败: ${error}`);
         }
     });
     const printPromptsCommand = vscode.commands.registerCommand('gitWorkSummary.printPrompts', () => {
         try {
-            console.log('\n📝 当前AI提示词示例:');
-            console.log('====================================');
+            (0, logger_1.log)('\n📝 当前AI提示词示例:');
+            (0, logger_1.log)('====================================');
             const examples = aiService.getPromptExamples();
-            console.log(examples);
-            console.log('====================================');
+            (0, logger_1.log)(examples);
+            (0, logger_1.log)('====================================');
             vscode.window.showInformationMessage('AI提示词示例已输出到控制台');
         }
         catch (error) {
-            console.error('获取提示词示例失败:', error);
+            (0, logger_1.log)(`获取提示词示例失败: ${error}`);
             vscode.window.showErrorMessage(`获取提示词示例失败: ${error}`);
         }
     });
@@ -262,69 +286,69 @@ function activate(context) {
             await vscode.window.showTextDocument(doc);
         }
         catch (error) {
-            console.error('显示当前提示词失败:', error);
+            (0, logger_1.log)(`显示当前提示词失败: ${error}`);
             vscode.window.showErrorMessage(`显示当前提示词失败: ${error}`);
         }
     });
     const debugMultiProjectCommand = vscode.commands.registerCommand('gitWorkSummary.debugMultiProject', async () => {
         try {
             const config = configManager.getConfiguration();
-            console.log('\n🔍 多项目配置调试信息:');
-            console.log('====================================');
-            console.log(`✅ 多项目功能启用: ${config.enableMultiProject}`);
-            console.log(`📁 配置的项目路径数量: ${config.projectPaths.length}`);
+            (0, logger_1.log)('\n🔍 多项目配置调试信息:');
+            (0, logger_1.log)('====================================');
+            (0, logger_1.log)(`✅ 多项目功能启用: ${config.enableMultiProject}`);
+            (0, logger_1.log)(`📁 配置的项目路径数量: ${config.projectPaths.length}`);
             if (config.projectPaths.length > 0) {
-                console.log('📂 项目路径列表:');
+                (0, logger_1.log)('📂 项目路径列表:');
                 config.projectPaths.forEach((path, index) => {
                     const projectName = config.projectNames[path] || `项目${index + 1}`;
-                    console.log(`  ${index + 1}. ${projectName}: ${path}`);
+                    (0, logger_1.log)(`  ${index + 1}. ${projectName}: ${path}`);
                 });
             }
             else {
-                console.log('⚠️ 未配置任何项目路径');
+                (0, logger_1.log)('⚠️ 未配置任何项目路径');
             }
-            console.log('\n🎯 测试多项目功能可用性:');
+            (0, logger_1.log)('\n🎯 测试多项目功能可用性:');
             if (!config.enableMultiProject) {
-                console.log('❌ 多项目功能未启用');
+                (0, logger_1.log)('❌ 多项目功能未启用');
                 vscode.window.showWarningMessage('多项目功能未启用，请在配置中启用多项目功能');
             }
             else if (config.projectPaths.length === 0) {
-                console.log('❌ 未配置项目路径');
+                (0, logger_1.log)('❌ 未配置项目路径');
                 vscode.window.showWarningMessage('请在配置中添加项目路径');
             }
             else {
-                console.log('✅ 多项目功能配置正常');
+                (0, logger_1.log)('✅ 多项目功能配置正常');
                 // 测试各项目的Git状态
-                console.log('\n📊 各项目Git状态:');
+                (0, logger_1.log)('\n📊 各项目Git状态:');
                 for (const projectPath of config.projectPaths) {
                     const projectName = config.projectNames[projectPath] || projectPath;
                     try {
                         // 检查路径是否存在
                         const fs = require('fs');
                         if (!fs.existsSync(projectPath)) {
-                            console.log(`❌ ${projectName}: 路径不存在 (${projectPath})`);
+                            (0, logger_1.log)(`❌ ${projectName}: 路径不存在 (${projectPath})`);
                             continue;
                         }
                         // 检查是否是Git仓库
                         const gitPath = require('path').join(projectPath, '.git');
                         if (!fs.existsSync(gitPath)) {
-                            console.log(`❌ ${projectName}: 不是Git仓库 (${projectPath})`);
+                            (0, logger_1.log)(`❌ ${projectName}: 不是Git仓库 (${projectPath})`);
                             continue;
                         }
                         // 获取最近提交
                         const recentCommits = await gitAnalyzer.getRecentCommits(projectPath, 5, config.onlyMyCommits, config.scanAllBranches);
-                        console.log(`✅ ${projectName}: ${recentCommits.length} 个最近提交 (${projectPath})`);
+                        (0, logger_1.log)(`✅ ${projectName}: ${recentCommits.length} 个最近提交 (${projectPath})`);
                     }
                     catch (error) {
-                        console.log(`❌ ${projectName}: Git分析失败 - ${error} (${projectPath})`);
+                        (0, logger_1.log)(`❌ ${projectName}: Git分析失败 - ${error} (${projectPath})`);
                     }
                 }
                 vscode.window.showInformationMessage(`多项目功能已启用，配置了 ${config.projectPaths.length} 个项目`);
             }
-            console.log('====================================');
+            (0, logger_1.log)('====================================');
         }
         catch (error) {
-            console.error('多项目配置调试失败:', error);
+            (0, logger_1.log)(`多项目配置调试失败: ${error}`);
             vscode.window.showErrorMessage(`多项目配置调试失败: ${error}`);
         }
     });
@@ -401,24 +425,24 @@ function activate(context) {
                 const currentProjectNames = config.projectNames;
                 currentProjectNames[projectPath] = projectName.trim();
                 await configManager.updateConfiguration('projectNames', currentProjectNames);
-                vscode.window.showInformationMessage(`项目 "${projectName}" 已添加`);
+                (0, logger_1.log)(`项目 "${projectName}" 已添加`);
             }
             if (projectPaths.length === 0) {
-                vscode.window.showWarningMessage('未添加任何项目，多项目功能将无法使用。');
+                (0, logger_1.log)('未添加任何项目，多项目功能将无法使用。');
                 return;
             }
             // 保存项目路径
             await configManager.updateConfiguration('projectPaths', projectPaths);
             // 显示完成信息
-            vscode.window.showInformationMessage(`多项目功能配置完成！已添加 ${projectPaths.length} 个项目。现在可以使用"Generate Multi-Project Daily Report"和"Generate Multi-Project Weekly Report"命令生成合并报告。`);
+            (0, logger_1.log)(`多项目功能配置完成！已添加 ${projectPaths.length} 个项目。现在可以使用"Generate Multi-Project Daily Report"和"Generate Multi-Project Weekly Report"命令生成合并报告。`);
             // 询问是否立即生成报告
             const generateNow = await vscode.window.showInformationMessage('是否立即生成今日的多项目日报？', '生成日报', '稍后生成');
             if (generateNow === '生成日报') {
-                vscode.commands.executeCommand('gitWorkSummary.generateMultiProjectDailyReport');
+                vscode.commands.executeCommand('gitWorkSummary.generateDailyReport');
             }
         }
         catch (error) {
-            console.error('快速配置多项目失败:', error);
+            (0, logger_1.log)(`快速配置多项目失败: ${error}`);
             vscode.window.showErrorMessage(`快速配置多项目失败: ${error}`);
         }
     });
@@ -430,17 +454,17 @@ function activate(context) {
     });
     // 启动定时任务
     gitWorkSummaryManager.start().catch(error => {
-        console.error('启动 Git Work Summary 失败:', error);
+        (0, logger_1.log)(`启动 Git Work Summary 失败: ${error}`);
         vscode.window.showErrorMessage(`启动 Git Work Summary 失败: ${error}`);
     });
     // 注册到上下文
-    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, printPromptsCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager);
+    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, printPromptsCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager, showLogsCommand);
     // 显示启动消息
     vscode.window.showInformationMessage('Git Work Summary 扩展已启动，开始定时监控今日代码变更并生成日报');
 }
 exports.activate = activate;
 function deactivate() {
-    console.log('Git Work Summary 扩展已停用');
+    (0, logger_1.log)('Git Work Summary 扩展已停用');
     if (gitWorkSummaryManager) {
         gitWorkSummaryManager.dispose();
     }

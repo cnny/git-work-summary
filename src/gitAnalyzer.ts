@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import simpleGit, { SimpleGit } from 'simple-git';
+import { log } from './logger';
 
 interface GitCommit {
     hash: string;

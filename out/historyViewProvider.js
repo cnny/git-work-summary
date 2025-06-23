@@ -28,6 +28,7 @@ const vscode = __importStar(require("vscode"));
 const workSummaryStorage_1 = require("./workSummaryStorage");
 const gitAnalyzer_1 = require("./gitAnalyzer");
 const configurationManager_1 = require("./configurationManager");
+const logger_1 = require("./logger");
 class HistoryViewProvider {
     constructor(context) {
         this.context = context;
@@ -48,33 +49,33 @@ class HistoryViewProvider {
         await this.loadAndDisplayHistory(panel);
         // 处理来自 webview 的消息
         panel.webview.onDidReceiveMessage(async (message) => {
-            console.log('收到webview消息:', message);
+            (0, logger_1.log)(`收到webview消息: ${JSON.stringify(message)}`);
             try {
                 switch (message.command) {
                     case 'refresh':
-                        console.log('执行刷新操作');
+                        (0, logger_1.log)('执行刷新操作');
                         await this.loadAndDisplayHistory(panel);
                         vscode.window.showInformationMessage('历史记录已刷新');
                         break;
                     case 'delete':
-                        console.log('执行删除操作:', message.id);
+                        (0, logger_1.log)(`执行删除操作: ${message.id}`);
                         await this.deleteSummary(message.id);
                         await this.loadAndDisplayHistory(panel);
                         break;
                     case 'export':
-                        console.log('执行导出操作');
+                        (0, logger_1.log)('执行导出操作');
                         await this.exportSummaries();
                         break;
                     case 'viewDetails':
-                        console.log('执行查看详情操作:', message.id);
+                        (0, logger_1.log)(`执行查看详情操作: ${message.id}`);
                         await this.showSummaryDetails(message.id);
                         break;
                     default:
-                        console.log('未知命令:', message.command);
+                        (0, logger_1.log)(`未知命令: ${message.command}`);
                 }
             }
             catch (error) {
-                console.error('处理webview消息失败:', error);
+                (0, logger_1.log)(`处理webview消息失败: ${error}`);
                 vscode.window.showErrorMessage(`操作失败: ${error}`);
             }
         });
@@ -106,10 +107,10 @@ class HistoryViewProvider {
                 // 删除工作总结
                 const deleted = await this.storage.deleteSummary(id);
                 if (deleted && summaryToDelete) {
-                    console.log(`删除工作总结: ${id}, 包含 ${summaryToDelete.commits.length} 个提交`);
+                    (0, logger_1.log)(`删除工作总结: ${id}, 包含 ${summaryToDelete.commits.length} 个提交`);
                     // 重置Git分析器的最后处理提交记录，以便重新处理这些提交
                     this.gitAnalyzer.resetLastProcessedCommit();
-                    console.log('已重置Git提交处理记录，相关提交可以重新处理');
+                    (0, logger_1.log)('已重置Git提交处理记录，相关提交可以重新处理');
                     vscode.window.showInformationMessage('工作总结已删除，相关提交记录已重置');
                 }
                 else {
@@ -117,7 +118,7 @@ class HistoryViewProvider {
                 }
             }
             catch (error) {
-                console.error('删除工作总结失败:', error);
+                (0, logger_1.log)(`删除工作总结失败: ${error}`);
                 vscode.window.showErrorMessage(`删除失败: ${error}`);
             }
         }
@@ -378,29 +379,29 @@ class HistoryViewProvider {
         const vscode = acquireVsCodeApi();
 
         function refresh() {
-            console.log('刷新按钮被点击');
+            log('刷新按钮被点击');
             vscode.postMessage({ command: 'refresh' });
         }
 
         function exportData() {
-            console.log('导出按钮被点击');
+            log('导出按钮被点击');
             vscode.postMessage({ command: 'export' });
         }
 
         function deleteSummary(id) {
-            console.log('删除按钮被点击:', id);
+            log('删除按钮被点击:', id);
             // 移除重复的确认对话框，因为后端已经有确认了
             vscode.postMessage({ command: 'delete', id: id });
         }
 
         function viewDetails(id) {
-            console.log('查看详情按钮被点击:', id);
+            log('查看详情按钮被点击:', id);
             vscode.postMessage({ command: 'viewDetails', id: id });
         }
 
         // 页面加载完成后的回调
         window.addEventListener('load', function() {
-            console.log('历史记录页面加载完成');
+            log('历史记录页面加载完成');
         });
     </script>
 </body>

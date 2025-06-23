@@ -4,6 +4,7 @@ import { GitAnalyzer, CommitInfo } from './gitAnalyzer';
 import { AISummaryService } from './aiSummaryService';
 import { ConfigurationManager } from './configurationManager';
 import { WorkSummary, MainTask } from './gitWorkSummaryManager';
+import { log } from './logger';
 
 export interface ProjectCommitInfo extends CommitInfo {
     projectPath: string;
@@ -45,8 +46,8 @@ export class MultiProjectManager {
             throw new Error('未配置项目路径');
         }
 
-        console.log(`\n🏢 开始生成多项目日报 (${date.toLocaleDateString('zh-CN')})...`);
-        console.log(`📁 项目数量: ${effectiveProjectPaths.length}`);
+        log(`\n🏢 开始生成多项目日报 (${date.toLocaleDateString('zh-CN')})...`);
+        log(`📁 项目数量: ${effectiveProjectPaths.length}`);
 
         const allCommits: ProjectCommitInfo[] = [];
         const projectStats: ProjectStats[] = [];
@@ -55,7 +56,7 @@ export class MultiProjectManager {
         for (const projectPath of effectiveProjectPaths) {
             try {
                 const projectName = this.getProjectName(projectPath, config.projectNames);
-                console.log(`\n📂 分析项目: ${projectName} (${projectPath})`);
+                log(`\n📂 分析项目: ${projectName} (${projectPath})`);
 
                 const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                 const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
@@ -68,7 +69,7 @@ export class MultiProjectManager {
                     config.scanAllBranches
                 );
 
-                console.log(`  📝 找到 ${commits.length} 个提交`);
+                log(`  📝 找到 ${commits.length} 个提交`);
 
                 // 为提交添加项目信息
                 const projectCommits: ProjectCommitInfo[] = commits.map(commit => ({
@@ -93,7 +94,7 @@ export class MultiProjectManager {
                 projectStats.push(stats);
 
             } catch (error) {
-                console.warn(`⚠️ 分析项目 ${projectPath} 失败:`, error);
+                log(`⚠️ 分析项目 ${projectPath} 失败: ${error}`);
                 // 添加空的项目统计
                 const projectName = this.getProjectName(projectPath, config.projectNames);
                 projectStats.push({
@@ -109,12 +110,12 @@ export class MultiProjectManager {
         }
 
         if (allCommits.length === 0) {
-            console.log(`📭 所有项目均无提交记录`);
+            log(`📭 所有项目均无提交记录`);
             return null;
         }
 
-        console.log(`\n🔄 开始AI分析合并报告...`);
-        console.log(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
+        log(`\n🔄 开始AI分析合并报告...`);
+        log(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
 
         // 生成AI分析
         const summary = await this.aiService.generateMultiProjectReport(
@@ -140,7 +141,7 @@ export class MultiProjectManager {
             projectStats
         };
 
-        console.log(`✅ 多项目日报生成完成`);
+        log(`✅ 多项目日报生成完成`);
         return multiProjectSummary;
     }
 
@@ -157,9 +158,9 @@ export class MultiProjectManager {
             throw new Error('未配置项目路径');
         }
 
-        console.log(`\n🏢 开始生成多项目周报...`);
-        console.log(`📅 时间范围: ${startDate.toLocaleDateString('zh-CN')} - ${endDate.toLocaleDateString('zh-CN')}`);
-        console.log(`📁 项目数量: ${effectiveProjectPaths.length}`);
+        log(`\n🏢 开始生成多项目周报...`);
+        log(`📅 时间范围: ${startDate.toLocaleDateString('zh-CN')} - ${endDate.toLocaleDateString('zh-CN')}`);
+        log(`📁 项目数量: ${effectiveProjectPaths.length}`);
 
         const allCommits: ProjectCommitInfo[] = [];
         const projectStats: ProjectStats[] = [];
@@ -168,7 +169,7 @@ export class MultiProjectManager {
         for (const projectPath of effectiveProjectPaths) {
             try {
                 const projectName = this.getProjectName(projectPath, config.projectNames);
-                console.log(`\n📂 分析项目: ${projectName} (${projectPath})`);
+                log(`\n📂 分析项目: ${projectName} (${projectPath})`);
 
                 const commits = await this.gitAnalyzer.getCommitsByDateRange(
                     projectPath,
@@ -178,7 +179,7 @@ export class MultiProjectManager {
                     config.scanAllBranches
                 );
 
-                console.log(`  📝 找到 ${commits.length} 个提交`);
+                log(`  📝 找到 ${commits.length} 个提交`);
 
                 // 为提交添加项目信息
                 const projectCommits: ProjectCommitInfo[] = commits.map(commit => ({
@@ -203,7 +204,7 @@ export class MultiProjectManager {
                 projectStats.push(stats);
 
             } catch (error) {
-                console.warn(`⚠️ 分析项目 ${projectPath} 失败:`, error);
+                log(`⚠️ 分析项目 ${projectPath} 失败: ${error}`);
                 const projectName = this.getProjectName(projectPath, config.projectNames);
                 projectStats.push({
                     projectPath,
@@ -218,12 +219,12 @@ export class MultiProjectManager {
         }
 
         if (allCommits.length === 0) {
-            console.log(`📭 所有项目均无提交记录`);
+            log(`📭 所有项目均无提交记录`);
             return null;
         }
 
-        console.log(`\n🔄 开始AI分析合并报告...`);
-        console.log(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
+        log(`\n🔄 开始AI分析合并报告...`);
+        log(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
 
         // 生成AI分析
         const summary = await this.aiService.generateMultiProjectReport(
@@ -248,7 +249,7 @@ export class MultiProjectManager {
             projectStats
         };
 
-        console.log(`✅ 多项目周报生成完成`);
+        log(`✅ 多项目周报生成完成`);
         return multiProjectSummary;
     }
 

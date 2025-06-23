@@ -1,6 +1,9 @@
+import * as vscode from 'vscode';
 import axios from 'axios';
-import { CommitInfo, WorkSummary, MainTask } from './gitWorkSummaryManager';
 import { ConfigurationManager, CustomPrompts } from './configurationManager';
+import { CommitInfo, MainTask, WorkSummary } from './gitWorkSummaryManager';
+import { MultiProjectSummary, ProjectCommitInfo, ProjectStats } from './multiProjectManager';
+import { log } from './logger';
 
 export interface AISummaryResult {
     content: string;
@@ -31,7 +34,7 @@ export class AISummaryService {
             }
         }
         
-        console.log(`AI服务配置更新: Provider=${this.provider}, Model=${this.model}, BaseURL=${this.baseUrl}`);
+        log(`AI服务配置更新: Provider=${this.provider}, Model=${this.model}, BaseURL=${this.baseUrl}`);
     }
 
     private getDefaultBaseUrl(provider: string): string {
@@ -133,16 +136,16 @@ export class AISummaryService {
             console.warn(`推理模型 ${this.model} 需要较长响应时间，自动调整超时为120秒`);
         }
         
-        console.log(`发起AI请求: ${this.baseUrl}/chat/completions, 模型: ${this.model}, 超时: ${timeout}ms, 合并消息: ${mergeMessages}`);
+        log(`发起AI请求: ${this.baseUrl}/chat/completions, 模型: ${this.model}, 超时: ${timeout}ms, 合并消息: ${mergeMessages}`);
         
         // 输出提示词日志（如果启用）
         if (config.enablePromptLogging) {
-            console.log('=== AI提示词日志 ===');
-            console.log('系统提示词:');
-            console.log(systemPrompt);
-            console.log('\n用户提示词:');
-            console.log(userPrompt);
-            console.log('==================');
+            log('=== AI提示词日志 ===');
+            log('系统提示词:');
+            log(systemPrompt);
+            log('\n用户提示词:');
+            log(userPrompt);
+            log('==================');
         }
         
         // 构建消息
@@ -195,7 +198,7 @@ export class AISummaryService {
                 }
             );
 
-            console.log(`AI请求成功，状态码: ${response.status}`);
+            log(`AI请求成功，状态码: ${response.status}`);
             
             if (!response.data.choices || response.data.choices.length === 0) {
                 throw new Error('AI 服务返回空响应');
@@ -487,7 +490,7 @@ export class AISummaryService {
             const config = this.configManager.getConfiguration();
             const testTimeout = Math.min(config.aiTimeout * 1000, 30000); // 测试连接最多30秒
             
-            console.log(`测试AI连接: ${this.baseUrl}, 模型: ${this.model}, 超时: ${testTimeout}ms`);
+            log(`测试AI连接: ${this.baseUrl}, 模型: ${this.model}, 超时: ${testTimeout}ms`);
             
             const response = await axios.post(
                 `${this.baseUrl}/chat/completions`,

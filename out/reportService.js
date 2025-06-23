@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportService = void 0;
 const axios_1 = __importDefault(require("axios"));
+const logger_1 = require("./logger");
 class ReportService {
     constructor(configManager) {
         this.configManager = configManager;
@@ -27,7 +28,7 @@ class ReportService {
         const config = this.configManager.getConfiguration();
         // 检查是否配置了上报URL
         if (!this.reportUrl) {
-            console.log('上报接口未配置，跳过上报');
+            (0, logger_1.log)('上报接口未配置，跳过上报');
             return;
         }
         const reportData = this.formatReportData(workSummary);
@@ -40,7 +41,7 @@ class ReportService {
             if (response.status >= 400) {
                 throw new Error(`上报失败，状态码: ${response.status}, 响应: ${JSON.stringify(response.data)}`);
             }
-            console.log(`工作总结上报成功: ${workSummary.id}`);
+            (0, logger_1.log)(`工作总结上报成功: ${workSummary.id}`);
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {

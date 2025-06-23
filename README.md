@@ -170,7 +170,7 @@ Ctrl+Shift+P → Git Work Summary: Show AI Prompts
 
 ### 调试方法
 1. 使用 `Test AI` 命令测试 AI 连接
-2. 查看输出控制台的详细日志
+2. 使用 `Show Logs` 命令查看详细日志
 3. 使用 `Debug Git Status` 命令检查 Git 状态
 
 ## 🎨 自定义提示词
@@ -212,3 +212,25 @@ Ctrl+Shift+P → Git Work Summary: Show AI Prompts
 🎉 **恭喜！** 您已完成 Git Work Summary 的配置。扩展现在会自动分析您的代码变更并生成智能工作总结。
 
 如有问题，请查看完整的 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) 或在[Github](https://github.com/cnny/git-work-summary)提交 Issue。 
+
+## 📋 查看运行日志
+
+如果需要查看扩展的详细运行日志，可以通过以下方式：
+
+### 方法1：使用命令
+1. 打开命令面板（`Ctrl+Shift+P` 或 `Cmd+Shift+P`）
+2. 输入 `Git Work Summary: Show Logs`
+3. 选择该命令，会直接打开日志输出面板
+
+### 方法2：手动打开
+1. 打开VS Code输出面板：`Ctrl+Shift+U` (或 `Cmd+Shift+U`)
+2. 在下拉选择框中选择 "Git Work Summary" 通道
+3. 查看详细的执行日志
+
+### 日志内容包括：
+- ✅ 扩展启动和配置信息
+- ⏰ 定时任务执行情况
+- 🔍 Git仓库分析过程
+- 🤖 AI分析结果和耗时
+- ❌ 错误和警告信息
+- 📊 项目统计和提交数据

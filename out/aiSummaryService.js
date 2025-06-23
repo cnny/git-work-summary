@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AISummaryService = void 0;
 const axios_1 = __importDefault(require("axios"));
+const logger_1 = require("./logger");
 class AISummaryService {
     constructor(configManager) {
         this.configManager = configManager;
@@ -26,7 +27,7 @@ class AISummaryService {
                 console.warn('推理模型可能需要更长响应时间，建议优先使用 deepseek-chat');
             }
         }
-        console.log(`AI服务配置更新: Provider=${this.provider}, Model=${this.model}, BaseURL=${this.baseUrl}`);
+        (0, logger_1.log)(`AI服务配置更新: Provider=${this.provider}, Model=${this.model}, BaseURL=${this.baseUrl}`);
     }
     getDefaultBaseUrl(provider) {
         switch (provider) {
@@ -122,15 +123,15 @@ class AISummaryService {
             timeout = 120000; // 推理模型至少2分钟
             console.warn(`推理模型 ${this.model} 需要较长响应时间，自动调整超时为120秒`);
         }
-        console.log(`发起AI请求: ${this.baseUrl}/chat/completions, 模型: ${this.model}, 超时: ${timeout}ms, 合并消息: ${mergeMessages}`);
+        (0, logger_1.log)(`发起AI请求: ${this.baseUrl}/chat/completions, 模型: ${this.model}, 超时: ${timeout}ms, 合并消息: ${mergeMessages}`);
         // 输出提示词日志（如果启用）
         if (config.enablePromptLogging) {
-            console.log('=== AI提示词日志 ===');
-            console.log('系统提示词:');
-            console.log(systemPrompt);
-            console.log('\n用户提示词:');
-            console.log(userPrompt);
-            console.log('==================');
+            (0, logger_1.log)('=== AI提示词日志 ===');
+            (0, logger_1.log)('系统提示词:');
+            (0, logger_1.log)(systemPrompt);
+            (0, logger_1.log)('\n用户提示词:');
+            (0, logger_1.log)(userPrompt);
+            (0, logger_1.log)('==================');
         }
         // 构建消息
         let messages;
@@ -176,7 +177,7 @@ class AISummaryService {
                     return status >= 200 && status < 300;
                 }
             });
-            console.log(`AI请求成功，状态码: ${response.status}`);
+            (0, logger_1.log)(`AI请求成功，状态码: ${response.status}`);
             if (!response.data.choices || response.data.choices.length === 0) {
                 throw new Error('AI 服务返回空响应');
             }
@@ -435,7 +436,7 @@ class AISummaryService {
         try {
             const config = this.configManager.getConfiguration();
             const testTimeout = Math.min(config.aiTimeout * 1000, 30000); // 测试连接最多30秒
-            console.log(`测试AI连接: ${this.baseUrl}, 模型: ${this.model}, 超时: ${testTimeout}ms`);
+            (0, logger_1.log)(`测试AI连接: ${this.baseUrl}, 模型: ${this.model}, 超时: ${testTimeout}ms`);
             const response = await axios_1.default.post(`${this.baseUrl}/chat/completions`, {
                 model: this.model,
                 messages: [
