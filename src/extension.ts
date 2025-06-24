@@ -369,47 +369,14 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
-    const printPromptsCommand = vscode.commands.registerCommand(
-        'gitWorkSummary.printPrompts',
-        () => {
-            try {
-                log('\n📝 当前AI提示词示例:');
-                log('====================================');
-                const examples = aiService.getPromptExamples();
-                log(examples);
-                log('====================================');
-                vscode.window.showInformationMessage('AI提示词示例已输出到控制台');
-            } catch (error) {
-                log(`获取提示词示例失败: ${error}`);
-                vscode.window.showErrorMessage(`获取提示词示例失败: ${error}`);
-            }
-        }
-    );
-
     const showCurrentPromptsCommand = vscode.commands.registerCommand(
         'gitWorkSummary.showCurrentPrompts',
         async () => {
             try {
-                const config = configManager.getConfiguration();
+                log('\n📝 生成当前提示词配置详情...');
                 
-                // 构建当前配置的提示词信息
-                let content = '# 当前AI提示词配置\n\n';
-                
-                // 显示自定义提示词配置
-                if (Object.keys(config.customPrompts).length > 0) {
-                    content += '## 自定义提示词配置\n\n';
-                    content += '```json\n';
-                    content += JSON.stringify(config.customPrompts, null, 2);
-                    content += '\n```\n\n';
-                } else {
-                    content += '## 自定义提示词配置\n\n';
-                    content += '当前使用默认提示词（未配置自定义提示词）\n\n';
-                }
-                
-                // 显示完整的提示词示例
-                content += '## 完整提示词示例\n\n';
-                const examples = aiService.getPromptExamples();
-                content += examples;
+                // 获取真实的提示词内容
+                const content = aiService.getCurrentPrompts();
                 
                 // 创建新文档显示
                 const doc = await vscode.workspace.openTextDocument({
@@ -417,6 +384,9 @@ export function activate(context: vscode.ExtensionContext) {
                     language: 'markdown'
                 });
                 await vscode.window.showTextDocument(doc);
+                
+                log('✅ 提示词配置详情已生成');
+                vscode.window.showInformationMessage('提示词配置详情已生成，包含实际的系统和用户提示词内容');
                 
             } catch (error) {
                 log(`显示当前提示词失败: ${error}`);
@@ -667,7 +637,6 @@ export function activate(context: vscode.ExtensionContext) {
         debugGitStatusCommand,
         testAICommand,
         testConfigUpdateCommand,
-        printPromptsCommand,
         showCurrentPromptsCommand,
         debugMultiProjectCommand,
         quickSetupMultiProjectCommand,

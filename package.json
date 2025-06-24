@@ -2,7 +2,7 @@
   "name": "git-work-summary",
   "displayName": "Git Work Summary",
   "description": "定时提取 git 变更并生成工作总结",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "publisher": "Cann",
   "author": {
     "name": "cnny"
@@ -40,7 +40,6 @@
     "onCommand:gitWorkSummary.resetProcessedCommits",
     "onCommand:gitWorkSummary.debugGitStatus",
     "onCommand:gitWorkSummary.testAI",
-    "onCommand:gitWorkSummary.printPrompts",
     "onCommand:gitWorkSummary.showCurrentPrompts",
     "onCommand:gitWorkSummary.debugMultiProject",
     "onCommand:gitWorkSummary.quickSetupMultiProject",
@@ -98,11 +97,6 @@
       {
         "command": "gitWorkSummary.testAI",
         "title": "Test AI Configuration",
-        "category": "Git Work Summary"
-      },
-      {
-        "command": "gitWorkSummary.printPrompts",
-        "title": "Show AI Prompts",
         "category": "Git Work Summary"
       },
       {

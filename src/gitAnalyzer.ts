@@ -470,6 +470,12 @@ export class GitAnalyzer {
                 return null;
             }
 
+            // 过滤非实际编程操作的提交
+            if (this.shouldFilterCommit(commit)) {
+                console.log(`过滤非编程提交: ${commit.hash.substring(0, 8)} - ${commit.message}`);
+                return null;
+            }
+
             // 获取提交涉及的文件
             const diffSummary = await this.git.diffSummary([`${commit.hash}^`, commit.hash]);
             
@@ -491,6 +497,37 @@ export class GitAnalyzer {
             console.error(`获取提交详情失败 (${commit.hash}):`, error);
             return null;
         }
+    }
+
+    /**
+     * 判断是否应该过滤此提交（非实际编程操作）
+     */
+    private shouldFilterCommit(commit: any): boolean {
+        const message = commit.message.trim().toLowerCase();
+        
+        // 过滤merge提交
+        if (message.startsWith('merge') || message.includes('merge into') || 
+            message.startsWith('合并') || message.includes('合并到')) {
+            return true;
+        }
+        
+        // 过滤其他非编程操作
+        const filterPatterns = [
+            /^merge\s+/i,                              // merge开头的提交
+            /merge\s+.*\s+into\s+/i,                   // merge ... into ...
+            /^revert\s+/i,                             // revert开头的提交  
+            /^initial\s+commit$/i,                     // 初始提交
+            /^初始化.*提交$/i,                          // 中文初始提交
+            /^(hotfix|release)\/.*merge/i,             // 分支合并相关
+            /^bump\s+version/i,                        // 版本更新
+            /^update\s+.*\.md$/i,                      // 仅更新文档
+            /^docs?:\s+/i,                             // 文档更新提交
+            /^chore:\s+/i,                             // 杂务提交
+            /^ci:\s+/i,                                // CI相关提交
+            /^build:\s+/i,                             // 构建相关提交
+        ];
+        
+        return filterPatterns.some(pattern => pattern.test(message));
     }
 
     /**

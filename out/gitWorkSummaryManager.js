@@ -876,36 +876,6 @@ class GitWorkSummaryManager {
         }
     }
     /**
-     * 处理周报生成
-     */
-    async processWeeklyReport(startDate, endDate, commits) {
-        const weekStr = `${startDate.toLocaleDateString('zh-CN')} - ${endDate.toLocaleDateString('zh-CN')}`;
-        (0, logger_1.log)(`🤖 开始AI分析生成周报...`);
-        // 获取历史上下文（用于识别跨周任务）
-        const historySummaries = await this.storage.getRecentSummaries(14);
-        (0, logger_1.log)(`📚 获取 ${historySummaries.length} 个历史总结作为周报上下文`);
-        // 生成AI总结
-        const summary = await this.aiService.generateReport(commits, historySummaries, 'weekly', { start: startDate, end: endDate });
-        (0, logger_1.log)(`✅ AI分析完成`);
-        // 创建周报
-        const weeklyReport = {
-            id: this.generateId(),
-            timestamp: Date.now(),
-            type: 'weekly',
-            date: this.formatDateKey(startDate) + '_' + this.formatDateKey(endDate),
-            commits,
-            summary: summary.content,
-            mainTasks: summary.mainTasks,
-            reportStatus: 'pending'
-        };
-        (0, logger_1.log)(`📊 创建周报: ${weeklyReport.id}`);
-        // 保存周报
-        await this.storage.saveSummary(weeklyReport);
-        // 尝试上报
-        await this.tryReportSummary(weeklyReport, '周报');
-        (0, logger_1.log)(`🎉 ${weekStr} 周报处理完成`);
-    }
-    /**
      * 尝试上报总结
      */
     async tryReportSummary(summary, type) {

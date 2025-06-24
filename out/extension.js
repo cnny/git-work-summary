@@ -308,46 +308,19 @@ function activate(context) {
             vscode.window.showErrorMessage(`AI连接测试失败: ${error}`);
         }
     });
-    const printPromptsCommand = vscode.commands.registerCommand('gitWorkSummary.printPrompts', () => {
-        try {
-            (0, logger_1.log)('\n📝 当前AI提示词示例:');
-            (0, logger_1.log)('====================================');
-            const examples = aiService.getPromptExamples();
-            (0, logger_1.log)(examples);
-            (0, logger_1.log)('====================================');
-            vscode.window.showInformationMessage('AI提示词示例已输出到控制台');
-        }
-        catch (error) {
-            (0, logger_1.log)(`获取提示词示例失败: ${error}`);
-            vscode.window.showErrorMessage(`获取提示词示例失败: ${error}`);
-        }
-    });
     const showCurrentPromptsCommand = vscode.commands.registerCommand('gitWorkSummary.showCurrentPrompts', async () => {
         try {
-            const config = configManager.getConfiguration();
-            // 构建当前配置的提示词信息
-            let content = '# 当前AI提示词配置\n\n';
-            // 显示自定义提示词配置
-            if (Object.keys(config.customPrompts).length > 0) {
-                content += '## 自定义提示词配置\n\n';
-                content += '```json\n';
-                content += JSON.stringify(config.customPrompts, null, 2);
-                content += '\n```\n\n';
-            }
-            else {
-                content += '## 自定义提示词配置\n\n';
-                content += '当前使用默认提示词（未配置自定义提示词）\n\n';
-            }
-            // 显示完整的提示词示例
-            content += '## 完整提示词示例\n\n';
-            const examples = aiService.getPromptExamples();
-            content += examples;
+            (0, logger_1.log)('\n📝 生成当前提示词配置详情...');
+            // 获取真实的提示词内容
+            const content = aiService.getCurrentPrompts();
             // 创建新文档显示
             const doc = await vscode.workspace.openTextDocument({
                 content: content,
                 language: 'markdown'
             });
             await vscode.window.showTextDocument(doc);
+            (0, logger_1.log)('✅ 提示词配置详情已生成');
+            vscode.window.showInformationMessage('提示词配置详情已生成，包含实际的系统和用户提示词内容');
         }
         catch (error) {
             (0, logger_1.log)(`显示当前提示词失败: ${error}`);
@@ -523,7 +496,7 @@ function activate(context) {
         vscode.window.showErrorMessage(`启动 Git Work Summary 失败: ${error}`);
     });
     // 注册到上下文
-    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, testConfigUpdateCommand, printPromptsCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager, showLogsCommand);
+    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, testConfigUpdateCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager, showLogsCommand);
     // 显示启动消息
     vscode.window.showInformationMessage('Git Work Summary 扩展已启动，开始定时监控今日代码变更并生成日报');
 }

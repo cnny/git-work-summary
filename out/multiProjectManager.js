@@ -55,38 +55,34 @@ class MultiProjectManager {
                 const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
                 const commits = await this.gitAnalyzer.getCommitsByDateRange(projectPath, dayStart, dayEnd, config.onlyMyCommits, config.scanAllBranches);
                 (0, logger_1.log)(`  📝 找到 ${commits.length} 个提交`);
-                // 为提交添加项目信息
-                const projectCommits = commits.map(commit => ({
-                    ...commit,
-                    projectPath,
-                    projectName
-                }));
-                allCommits.push(...projectCommits);
-                // 计算项目统计
-                const stats = {
-                    projectPath,
-                    projectName,
-                    commitCount: commits.length,
-                    additions: commits.reduce((sum, c) => sum + c.additions, 0),
-                    deletions: commits.reduce((sum, c) => sum + c.deletions, 0),
-                    fileCount: new Set(commits.flatMap(c => c.files)).size,
-                    mainTasks: [] // 稍后由AI分析填充
-                };
-                projectStats.push(stats);
+                // 只有当项目有提交时才添加统计
+                if (commits.length > 0) {
+                    // 为提交添加项目信息
+                    const projectCommits = commits.map(commit => ({
+                        ...commit,
+                        projectPath,
+                        projectName
+                    }));
+                    allCommits.push(...projectCommits);
+                    // 计算项目统计
+                    const stats = {
+                        projectPath,
+                        projectName,
+                        commitCount: commits.length,
+                        additions: commits.reduce((sum, c) => sum + c.additions, 0),
+                        deletions: commits.reduce((sum, c) => sum + c.deletions, 0),
+                        fileCount: new Set(commits.flatMap(c => c.files)).size,
+                        mainTasks: [] // 稍后由AI分析填充
+                    };
+                    projectStats.push(stats);
+                }
+                else {
+                    (0, logger_1.log)(`  ⏭️ 项目无提交，跳过统计`);
+                }
             }
             catch (error) {
                 (0, logger_1.log)(`⚠️ 分析项目 ${projectPath} 失败: ${error}`);
-                // 添加空的项目统计
-                const projectName = this.getProjectName(projectPath, config.projectNames);
-                projectStats.push({
-                    projectPath,
-                    projectName,
-                    commitCount: 0,
-                    additions: 0,
-                    deletions: 0,
-                    fileCount: 0,
-                    mainTasks: []
-                });
+                // 不添加空的项目统计，只记录错误
             }
         }
         if (allCommits.length === 0) {
@@ -96,7 +92,7 @@ class MultiProjectManager {
         (0, logger_1.log)(`\n🔄 开始AI分析合并报告...`);
         (0, logger_1.log)(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
         // 生成AI分析
-        const summary = await this.aiService.generateMultiProjectReport(allCommits, projectStats, 'daily', { start: date, end: date });
+        const summary = await this.aiService.generateReport(allCommits, projectStats, 'daily', { start: date, end: date });
         // 更新项目统计中的主要任务
         this.updateProjectMainTasks(projectStats, summary.mainTasks, allCommits);
         const multiProjectSummary = {
@@ -136,37 +132,34 @@ class MultiProjectManager {
                 (0, logger_1.log)(`\n📂 分析项目: ${projectName} (${projectPath})`);
                 const commits = await this.gitAnalyzer.getCommitsByDateRange(projectPath, startDate, endDate, config.onlyMyCommits, config.scanAllBranches);
                 (0, logger_1.log)(`  📝 找到 ${commits.length} 个提交`);
-                // 为提交添加项目信息
-                const projectCommits = commits.map(commit => ({
-                    ...commit,
-                    projectPath,
-                    projectName
-                }));
-                allCommits.push(...projectCommits);
-                // 计算项目统计
-                const stats = {
-                    projectPath,
-                    projectName,
-                    commitCount: commits.length,
-                    additions: commits.reduce((sum, c) => sum + c.additions, 0),
-                    deletions: commits.reduce((sum, c) => sum + c.deletions, 0),
-                    fileCount: new Set(commits.flatMap(c => c.files)).size,
-                    mainTasks: []
-                };
-                projectStats.push(stats);
+                // 只有当项目有提交时才添加统计
+                if (commits.length > 0) {
+                    // 为提交添加项目信息
+                    const projectCommits = commits.map(commit => ({
+                        ...commit,
+                        projectPath,
+                        projectName
+                    }));
+                    allCommits.push(...projectCommits);
+                    // 计算项目统计
+                    const stats = {
+                        projectPath,
+                        projectName,
+                        commitCount: commits.length,
+                        additions: commits.reduce((sum, c) => sum + c.additions, 0),
+                        deletions: commits.reduce((sum, c) => sum + c.deletions, 0),
+                        fileCount: new Set(commits.flatMap(c => c.files)).size,
+                        mainTasks: []
+                    };
+                    projectStats.push(stats);
+                }
+                else {
+                    (0, logger_1.log)(`  ⏭️ 项目无提交，跳过统计`);
+                }
             }
             catch (error) {
                 (0, logger_1.log)(`⚠️ 分析项目 ${projectPath} 失败: ${error}`);
-                const projectName = this.getProjectName(projectPath, config.projectNames);
-                projectStats.push({
-                    projectPath,
-                    projectName,
-                    commitCount: 0,
-                    additions: 0,
-                    deletions: 0,
-                    fileCount: 0,
-                    mainTasks: []
-                });
+                // 不添加空的项目统计，只记录错误
             }
         }
         if (allCommits.length === 0) {
@@ -176,7 +169,7 @@ class MultiProjectManager {
         (0, logger_1.log)(`\n🔄 开始AI分析合并报告...`);
         (0, logger_1.log)(`📊 总计: ${allCommits.length} 个提交，涉及 ${projectStats.length} 个项目`);
         // 生成AI分析
-        const summary = await this.aiService.generateMultiProjectReport(allCommits, projectStats, 'weekly', { start: startDate, end: endDate });
+        const summary = await this.aiService.generateReport(allCommits, projectStats, 'weekly', { start: startDate, end: endDate });
         // 更新项目统计中的主要任务
         this.updateProjectMainTasks(projectStats, summary.mainTasks, allCommits);
         const multiProjectSummary = {

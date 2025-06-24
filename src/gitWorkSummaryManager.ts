@@ -1004,50 +1004,6 @@ export class GitWorkSummaryManager implements vscode.Disposable {
     }
 
     /**
-     * 处理周报生成
-     */
-    private async processWeeklyReport(startDate: Date, endDate: Date, commits: CommitInfo[]): Promise<void> {
-        const weekStr = `${startDate.toLocaleDateString('zh-CN')} - ${endDate.toLocaleDateString('zh-CN')}`;
-        log(`🤖 开始AI分析生成周报...`);
-
-        // 获取历史上下文（用于识别跨周任务）
-        const historySummaries = await this.storage.getRecentSummaries(14);
-        log(`📚 获取 ${historySummaries.length} 个历史总结作为周报上下文`);
-
-        // 生成AI总结
-        const summary = await this.aiService.generateReport(
-            commits,
-            historySummaries,
-            'weekly',
-            { start: startDate, end: endDate }
-        );
-
-        log(`✅ AI分析完成`);
-
-        // 创建周报
-        const weeklyReport: WorkSummary = {
-            id: this.generateId(),
-            timestamp: Date.now(),
-            type: 'weekly',
-            date: this.formatDateKey(startDate) + '_' + this.formatDateKey(endDate),
-            commits,
-            summary: summary.content,
-            mainTasks: summary.mainTasks,
-            reportStatus: 'pending'
-        };
-
-        log(`📊 创建周报: ${weeklyReport.id}`);
-
-        // 保存周报
-        await this.storage.saveSummary(weeklyReport);
-
-        // 尝试上报
-        await this.tryReportSummary(weeklyReport, '周报');
-
-        log(`🎉 ${weekStr} 周报处理完成`);
-    }
-
-    /**
      * 尝试上报总结
      */
     private async tryReportSummary(summary: WorkSummary, type: string): Promise<void> {
