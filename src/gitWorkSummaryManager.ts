@@ -451,11 +451,19 @@ export class GitWorkSummaryManager implements vscode.Disposable {
     }
 
     updateConfiguration(): void {
-        log('🔄 配置已更新，重新启动服务...');
+        log('🔄 配置已更新，更新所有服务配置...');
+        
+        // 更新所有服务的配置
+        this.aiService.updateConfiguration();
+        this.reportService.updateConfiguration();
+        
+        // 重新启动定时服务
         this.stop();
         this.start().catch(error => {
             log(`重新启动服务失败: ${error}`);
         });
+        
+        log('✅ 配置更新完成，所有服务已应用新配置');
     }
 
     /**

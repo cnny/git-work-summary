@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import { log } from './logger';
 
 export interface CustomPrompts {
     dailySystemPrompt?: string;
@@ -36,6 +39,8 @@ export interface Configuration {
 
 export class ConfigurationManager {
     private static readonly CONFIG_SECTION = 'gitWorkSummary';
+    private aiService?: any;
+    private reportService?: any;
 
     getConfiguration(): Configuration {
         const config = vscode.workspace.getConfiguration(ConfigurationManager.CONFIG_SECTION);
@@ -69,6 +74,12 @@ export class ConfigurationManager {
     async updateConfiguration(key: keyof Configuration, value: any): Promise<void> {
         const config = vscode.workspace.getConfiguration(ConfigurationManager.CONFIG_SECTION);
         await config.update(key, value, vscode.ConfigurationTarget.Global);
+    }
+
+    // 设置依赖服务（用于测试配置）
+    setServices(aiService: any, reportService: any): void {
+        this.aiService = aiService;
+        this.reportService = reportService;
     }
 
     async showConfiguration(): Promise<void> {
@@ -134,37 +145,273 @@ export class ConfigurationManager {
     }
 
     private async testConfiguration(config: Configuration): Promise<void> {
-        // 测试配置有效性
-        const issues: string[] = [];
+        return vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: "配置测试",
+            cancellable: false
+        }, async (progress, token) => {
+            let hasErrors = false;
+            const errorMessages: string[] = [];
+            const warnings: string[] = [];
 
-        if (!config.reportUrl.trim()) {
-            issues.push('上报接口 URL 不能为空');
-        } else if (!config.reportUrl.startsWith('http')) {
-            issues.push('上报接口 URL 必须以 http 或 https 开头');
-        }
+            log('\n🧪 开始配置测试...');
 
-        if (!config.aiApiKey.trim()) {
-            issues.push('AI API Key 不能为空');
-        }
+            // 1. 基础配置验证
+            progress.report({ increment: 10, message: "验证基础配置..." });
+            log('📋 正在验证基础配置...');
+            
+            if (config.interval < 1) {
+                const error = '❌ 定时间隔必须大于 0 分钟';
+                log(error);
+                errorMessages.push(error);
+                hasErrors = true;
+            } else {
+                log(`✅ 定时间隔: ${config.interval} 分钟`);
+            }
 
-        if (config.interval < 1) {
-            issues.push('定时间隔必须大于 0 分钟');
-        }
+            if (config.maxCommits < 1) {
+                const error = '❌ 最大提交数量必须大于 0';
+                log(error);
+                errorMessages.push(error);
+                hasErrors = true;
+            } else {
+                log(`✅ 最大提交数量: ${config.maxCommits}`);
+            }
 
-        if (config.maxCommits < 1) {
-            issues.push('最大提交数量必须大于 0');
-        }
+            if (config.aiTimeout < 10 || config.aiTimeout > 300) {
+                const error = '❌ AI 超时时间必须在 10-300 秒之间';
+                log(error);
+                errorMessages.push(error);
+                hasErrors = true;
+            } else {
+                log(`✅ AI 超时时间: ${config.aiTimeout} 秒`);
+            }
 
-        if (config.aiTimeout < 10 || config.aiTimeout > 300) {
-            issues.push('AI 超时时间必须在 10-300 秒之间');
-        }
+            // 2. AI配置测试
+            progress.report({ increment: 30, message: "测试AI配置..." });
+            log('\n🤖 正在测试AI配置...');
+            
+            if (!config.aiApiKey.trim()) {
+                const error = '❌ AI API Key 未配置';
+                log(error);
+                errorMessages.push(error);
+                hasErrors = true;
+            } else {
+                log('✅ AI API Key 已配置');
+                
+                // 如果AI服务可用，测试连接
+                if (this.aiService) {
+                    try {
+                        // 临时更新AI服务配置用于测试
+                        const originalProvider = this.aiService.provider;
+                        const originalApiKey = this.aiService.apiKey;
+                        const originalBaseUrl = this.aiService.baseUrl;
+                        const originalModel = this.aiService.model;
+                        
+                        this.aiService.provider = config.aiProvider;
+                        this.aiService.apiKey = config.aiApiKey;
+                        this.aiService.baseUrl = config.aiBaseUrl || this.getDefaultBaseUrl(config.aiProvider);
+                        this.aiService.model = config.aiModel || this.getDefaultModel(config.aiProvider);
+                        
+                        progress.report({ message: "测试AI连接..." });
+                        log('🔄 正在测试AI连接...');
+                        const aiTestResult = await this.aiService.testConnection();
+                        
+                        if (aiTestResult) {
+                            log('✅ AI连接测试成功');
+                        } else {
+                            const error = '❌ AI连接测试失败';
+                            log(error);
+                            errorMessages.push(error);
+                            hasErrors = true;
+                        }
+                        
+                        // 恢复原始配置
+                        this.aiService.provider = originalProvider;
+                        this.aiService.apiKey = originalApiKey;
+                        this.aiService.baseUrl = originalBaseUrl;
+                        this.aiService.model = originalModel;
+                        
+                    } catch (aiError) {
+                        const error = `❌ AI连接测试异常: ${aiError}`;
+                        log(error);
+                        errorMessages.push(error);
+                        hasErrors = true;
+                    }
+                } else {
+                    const warning = '⚠️ AI服务未初始化，跳过连接测试';
+                    log(warning);
+                    warnings.push(warning);
+                }
+            }
 
-        if (issues.length > 0) {
-            vscode.window.showWarningMessage(`配置验证失败:\\n${issues.join('\\n')}`);
-        } else {
-            vscode.window.showInformationMessage('配置验证通过');
+            // 3. 上报服务测试
+            progress.report({ increment: 30, message: "测试上报服务..." });
+            log('\n📡 正在测试上报服务...');
+            
+            if (!config.reportUrl.trim()) {
+                log('⏭️ 上报接口 URL 未配置，跳过上报测试');
+            } else if (!config.reportUrl.startsWith('http')) {
+                const error = '❌ 上报接口 URL 必须以 http 或 https 开头';
+                log(error);
+                errorMessages.push(error);
+                hasErrors = true;
+            } else {
+                log('✅ 上报接口 URL 格式正确');
+                
+                // 如果报告服务可用，测试连接
+                if (this.reportService) {
+                    try {
+                        // 临时更新报告服务配置用于测试
+                        const originalReportUrl = this.reportService.reportUrl;
+                        const originalHeaders = this.reportService.headers;
+                        
+                        this.reportService.reportUrl = config.reportUrl;
+                        this.reportService.headers = {
+                            'Content-Type': 'application/json',
+                            ...config.reportHeaders
+                        };
+                        
+                        progress.report({ message: "测试上报服务连接..." });
+                        log('🔄 正在测试上报服务连接...');
+                        const reportTestResult = await this.reportService.testConnection();
+                        
+                        if (reportTestResult.success) {
+                            log(`✅ 上报服务连接成功: ${reportTestResult.message}`);
+                        } else {
+                            const error = `❌ 上报服务连接失败: ${reportTestResult.message}`;
+                            log(error);
+                            errorMessages.push(error);
+                            hasErrors = true;
+                        }
+                        
+                        // 恢复原始配置
+                        this.reportService.reportUrl = originalReportUrl;
+                        this.reportService.headers = originalHeaders;
+                        
+                    } catch (reportError) {
+                        const error = `❌ 上报服务测试异常: ${reportError}`;
+                        log(error);
+                        errorMessages.push(error);
+                        hasErrors = true;
+                    }
+                } else {
+                    const warning = '⚠️ 上报服务未初始化，跳过连接测试';
+                    log(warning);
+                    warnings.push(warning);
+                }
+            }
+
+            // 4. 多项目配置验证
+            if (config.enableMultiProject) {
+                progress.report({ increment: 20, message: "验证多项目配置..." });
+                log('\n🏢 正在验证多项目配置...');
+                
+                if (config.projectPaths.length === 0) {
+                    const error = '❌ 多项目功能已启用但未配置项目路径';
+                    log(error);
+                    errorMessages.push(error);
+                    hasErrors = true;
+                } else {
+                    log(`✅ 配置了 ${config.projectPaths.length} 个项目路径`);
+                    
+                    // 验证项目路径
+                    let validProjects = 0;
+                    
+                    for (const projectPath of config.projectPaths) {
+                        if (fs.existsSync(projectPath)) {
+                            const gitPath = path.join(projectPath, '.git');
+                            if (fs.existsSync(gitPath)) {
+                                validProjects++;
+                            } else {
+                                const warning = `⚠️ 不是Git仓库: ${projectPath}`;
+                                log(warning);
+                                warnings.push(warning);
+                            }
+                        } else {
+                            const error = `❌ 路径不存在: ${projectPath}`;
+                            log(error);
+                            errorMessages.push(error);
+                            hasErrors = true;
+                        }
+                    }
+                    
+                    log(`✅ ${validProjects}/${config.projectPaths.length} 个项目路径有效`);
+                }
+            }
+
+            progress.report({ increment: 10, message: "完成测试..." });
+
+            // 显示测试结果汇总
+            log('\n📊 测试结果汇总:');
+            log(`├─ 基础配置: ${hasErrors ? '❌ 存在问题' : '✅ 正常'}`);
+            log(`├─ AI配置: ${config.aiApiKey ? '✅ 已配置' : '❌ 未配置'}`);
+            log(`├─ 上报配置: ${config.reportUrl ? '✅ 已配置' : '⏭️ 未配置'}`);
+            log(`└─ 多项目: ${config.enableMultiProject ? '✅ 已启用' : '⏭️ 未启用'}`);
+
+            if (hasErrors) {
+                log('❌ 配置测试发现问题，请检查错误并修复配置');
+            } else {
+                log('🎉 所有配置测试通过！');
+            }
+
+            // 5. 显示最终测试结果
+            setTimeout(() => {
+                if (hasErrors) {
+                    let message = `配置测试发现 ${errorMessages.length} 个问题`;
+                    if (warnings.length > 0) {
+                        message += ` 和 ${warnings.length} 个警告`;
+                    }
+                    message += '，详细信息已输出到"Git Work Summary"日志通道';
+                    
+                    vscode.window.showErrorMessage(message, '查看日志').then(selection => {
+                        if (selection === '查看日志') {
+                            vscode.commands.executeCommand('gitWorkSummary.showLogs');
+                        }
+                    });
+                } else {
+                    let message = '🎉 所有配置测试通过！';
+                    if (warnings.length > 0) {
+                        message += ` (有 ${warnings.length} 个警告)`;
+                    }
+                    
+                    if (warnings.length > 0) {
+                        vscode.window.showInformationMessage(message, '查看详情').then(selection => {
+                            if (selection === '查看详情') {
+                                vscode.commands.executeCommand('gitWorkSummary.showLogs');
+                            }
+                        });
+                    } else {
+                        vscode.window.showInformationMessage(message);
+                    }
+                }
+            }, 500);
+        });
+    }
+
+    private getDefaultBaseUrl(provider: string): string {
+        switch (provider) {
+            case 'deepseek':
+                return 'https://api.deepseek.com/v1';
+            case 'openai':
+                return 'https://api.openai.com/v1';
+            default:
+                return 'https://api.deepseek.com/v1';
         }
     }
+
+    private getDefaultModel(provider: string): string {
+        switch (provider) {
+            case 'deepseek':
+                return 'deepseek-chat';
+            case 'openai':
+                return 'gpt-4';
+            default:
+                return 'deepseek-chat';
+        }
+    }
+
+
 
     private getConfigWebviewContent(config: Configuration): string {
         return `

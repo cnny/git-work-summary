@@ -2,6 +2,56 @@
 
 All notable changes to the "Git Work Summary" extension will be documented in this file.
 
+## [1.1.5] - 2025-01-24
+
+### 🔧 Fixed
+- 🐛 修复配置更新后不立即生效，需要重启VS Code的问题
+- 🔄 解决AI、报告服务等组件配置更新不同步的问题
+
+### ✨ Enhanced
+- 🎯 优化配置界面测试功能，改为流畅的进度条体验
+- 📊 增强配置测试的全面性，包含AI连接和上报服务测试
+- 💬 改进配置测试反馈机制，使用日志通道替代重复弹框
+- ⚡ 提升配置变更的响应速度，所有组件立即应用新配置
+
+### 🎉 Added  
+- 🧪 新增 "Test Configuration & Connections" 命令，一键检测所有配置
+- 📈 添加配置变更的实时日志记录，便于调试和验证
+- 🔗 增强AI和上报服务的连接测试，提供详细的连接状态反馈
+- 📋 为配置管理器添加服务依赖注入，支持实时配置测试
+
+### 🚀 User Experience
+- **配置立即生效**：修改配置后无需重启，所有服务组件实时更新
+- **智能测试流程**：
+  - 使用进度条显示测试进度（10% → 40% → 70% → 100%）
+  - 自动测试基础配置、AI连接、上报服务、多项目设置
+  - 智能错误分类和结果汇总
+- **友好的结果反馈**：
+  - 成功时显示简洁的确认消息
+  - 失败时提供详细的错误统计和日志引导
+  - 警告时给出友好的提示和建议
+- **无干扰体验**：
+  - 测试过程不再需要多次点击确认
+  - 详细信息输出到专门的日志通道
+  - 用户可选择查看详细测试报告
+
+### 🛠️ Technical Improvements
+- **配置同步机制**：
+  - `configManager.updateConfiguration()` 现在会同步更新所有依赖服务
+  - `aiService.updateConfiguration()` 立即应用AI相关配置
+  - `reportService.updateConfiguration()` 立即应用上报相关配置
+- **测试架构优化**：
+  - 使用 `vscode.window.withProgress()` 实现流畅的进度体验
+  - 临时配置测试机制，不影响当前运行状态
+  - 错误和警告分类收集，统一处理和展示
+- **依赖注入系统**：
+  - 为 `ConfigurationManager` 添加服务依赖注入
+  - 支持配置测试时访问实际的服务实例
+  - 确保测试结果的准确性和可靠性
+
+### 📝 Commands Added
+- `gitWorkSummary.testConfigUpdate` - 测试配置更新和连接状态
+
 ## [1.1.4] - 2025-06-23
 
 ### Fixed

@@ -24,6 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
     const reportService = new ReportService(configManager);
     const storage = new WorkSummaryStorage(context);
     
+    // 为配置管理器注入服务依赖（用于测试配置）
+    configManager.setServices(aiService, reportService);
+    
     gitWorkSummaryManager = new GitWorkSummaryManager(
         gitAnalyzer,
         aiService,
@@ -276,6 +279,72 @@ export function activate(context: vscode.ExtensionContext) {
         'gitWorkSummary.showLogs',
         () => {
             showLogs();
+        }
+    );
+
+    const testConfigUpdateCommand = vscode.commands.registerCommand(
+        'gitWorkSummary.testConfigUpdate',
+        async () => {
+            try {
+                log('\n🧪 测试配置更新功能...');
+                
+                const config = configManager.getConfiguration();
+                log(`📊 当前配置状态:`);
+                log(`  ├─ 扩展启用: ${config.enabled}`);
+                log(`  ├─ AI提供商: ${config.aiProvider}`);
+                log(`  ├─ AI模型: ${config.aiModel || '默认'}`);
+                log(`  ├─ AI BaseURL: ${config.aiBaseUrl || '默认'}`);
+                log(`  ├─ AI超时时间: ${config.aiTimeout} 秒`);
+                log(`  ├─ AI Key配置: ${config.aiApiKey ? '已配置' : '未配置'}`);
+                log(`  ├─ 定时间隔: ${config.interval} 分钟`);
+                log(`  ├─ 启用周报: ${config.enableWeeklyReport}`);
+                log(`  ├─ 多项目模式: ${config.enableMultiProject}`);
+                log(`  └─ 上报URL: ${config.reportUrl ? '已配置' : '未配置'}`);
+                
+                // 测试AI连接
+                log('\n🔄 测试AI配置连接...');
+                if (!config.aiApiKey) {
+                    log('❌ AI API Key 未配置，跳过AI连接测试');
+                } else {
+                    try {
+                        const aiTestResult = await aiService.testConnection();
+                        if (aiTestResult) {
+                            log('✅ AI连接测试成功');
+                        } else {
+                            log('❌ AI连接测试失败');
+                        }
+                    } catch (aiError) {
+                        log(`❌ AI连接测试异常: ${aiError}`);
+                    }
+                }
+                
+                // 测试上报服务连接（如果配置了）
+                if (config.reportUrl) {
+                    log('\n🔄 测试上报服务连接...');
+                    try {
+                        const reportTestResult = await reportService.testConnection();
+                        if (reportTestResult.success) {
+                            log(`✅ 上报服务连接测试成功: ${reportTestResult.message}`);
+                        } else {
+                            log(`❌ 上报服务连接测试失败: ${reportTestResult.message}`);
+                        }
+                    } catch (reportError) {
+                        log(`❌ 上报服务测试异常: ${reportError}`);
+                    }
+                } else {
+                    log('\n⏭️ 上报URL未配置，跳过上报服务测试');
+                }
+                
+                log('\n✅ 配置测试完成');
+                vscode.window.showInformationMessage(
+                    '配置测试完成，请查看"Git Work Summary"输出通道查看详细信息。' +
+                    '现在可以修改配置并观察是否立即生效（无需重启）。'
+                );
+                
+            } catch (error) {
+                log(`❌ 配置测试失败: ${error}`);
+                vscode.window.showErrorMessage(`配置测试失败: ${error}`);
+            }
         }
     );
 
@@ -574,6 +643,7 @@ export function activate(context: vscode.ExtensionContext) {
     // 注册配置变更监听
     const configChangeListener = vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration('gitWorkSummary')) {
+            log('📝 检测到 Git Work Summary 配置变更，开始更新...');
             gitWorkSummaryManager.updateConfiguration();
         }
     });
@@ -596,6 +666,7 @@ export function activate(context: vscode.ExtensionContext) {
         resetProcessedCommitsCommand,
         debugGitStatusCommand,
         testAICommand,
+        testConfigUpdateCommand,
         printPromptsCommand,
         showCurrentPromptsCommand,
         debugMultiProjectCommand,

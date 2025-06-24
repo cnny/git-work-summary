@@ -45,6 +45,8 @@ function activate(context) {
     const aiService = new aiSummaryService_1.AISummaryService(configManager);
     const reportService = new reportService_1.ReportService(configManager);
     const storage = new workSummaryStorage_1.WorkSummaryStorage(context);
+    // 为配置管理器注入服务依赖（用于测试配置）
+    configManager.setServices(aiService, reportService);
     gitWorkSummaryManager = new gitWorkSummaryManager_1.GitWorkSummaryManager(gitAnalyzer, aiService, reportService, configManager, storage);
     const historyProvider = new historyViewProvider_1.HistoryViewProvider(context);
     const multiProjectManager = new multiProjectManager_1.MultiProjectManager(gitAnalyzer, aiService, configManager);
@@ -225,6 +227,68 @@ function activate(context) {
     // 注册查看日志命令
     const showLogsCommand = vscode.commands.registerCommand('gitWorkSummary.showLogs', () => {
         (0, logger_1.showLogs)();
+    });
+    const testConfigUpdateCommand = vscode.commands.registerCommand('gitWorkSummary.testConfigUpdate', async () => {
+        try {
+            (0, logger_1.log)('\n🧪 测试配置更新功能...');
+            const config = configManager.getConfiguration();
+            (0, logger_1.log)(`📊 当前配置状态:`);
+            (0, logger_1.log)(`  ├─ 扩展启用: ${config.enabled}`);
+            (0, logger_1.log)(`  ├─ AI提供商: ${config.aiProvider}`);
+            (0, logger_1.log)(`  ├─ AI模型: ${config.aiModel || '默认'}`);
+            (0, logger_1.log)(`  ├─ AI BaseURL: ${config.aiBaseUrl || '默认'}`);
+            (0, logger_1.log)(`  ├─ AI超时时间: ${config.aiTimeout} 秒`);
+            (0, logger_1.log)(`  ├─ AI Key配置: ${config.aiApiKey ? '已配置' : '未配置'}`);
+            (0, logger_1.log)(`  ├─ 定时间隔: ${config.interval} 分钟`);
+            (0, logger_1.log)(`  ├─ 启用周报: ${config.enableWeeklyReport}`);
+            (0, logger_1.log)(`  ├─ 多项目模式: ${config.enableMultiProject}`);
+            (0, logger_1.log)(`  └─ 上报URL: ${config.reportUrl ? '已配置' : '未配置'}`);
+            // 测试AI连接
+            (0, logger_1.log)('\n🔄 测试AI配置连接...');
+            if (!config.aiApiKey) {
+                (0, logger_1.log)('❌ AI API Key 未配置，跳过AI连接测试');
+            }
+            else {
+                try {
+                    const aiTestResult = await aiService.testConnection();
+                    if (aiTestResult) {
+                        (0, logger_1.log)('✅ AI连接测试成功');
+                    }
+                    else {
+                        (0, logger_1.log)('❌ AI连接测试失败');
+                    }
+                }
+                catch (aiError) {
+                    (0, logger_1.log)(`❌ AI连接测试异常: ${aiError}`);
+                }
+            }
+            // 测试上报服务连接（如果配置了）
+            if (config.reportUrl) {
+                (0, logger_1.log)('\n🔄 测试上报服务连接...');
+                try {
+                    const reportTestResult = await reportService.testConnection();
+                    if (reportTestResult.success) {
+                        (0, logger_1.log)(`✅ 上报服务连接测试成功: ${reportTestResult.message}`);
+                    }
+                    else {
+                        (0, logger_1.log)(`❌ 上报服务连接测试失败: ${reportTestResult.message}`);
+                    }
+                }
+                catch (reportError) {
+                    (0, logger_1.log)(`❌ 上报服务测试异常: ${reportError}`);
+                }
+            }
+            else {
+                (0, logger_1.log)('\n⏭️ 上报URL未配置，跳过上报服务测试');
+            }
+            (0, logger_1.log)('\n✅ 配置测试完成');
+            vscode.window.showInformationMessage('配置测试完成，请查看"Git Work Summary"输出通道查看详细信息。' +
+                '现在可以修改配置并观察是否立即生效（无需重启）。');
+        }
+        catch (error) {
+            (0, logger_1.log)(`❌ 配置测试失败: ${error}`);
+            vscode.window.showErrorMessage(`配置测试失败: ${error}`);
+        }
     });
     const testAICommand = vscode.commands.registerCommand('gitWorkSummary.testAI', async () => {
         try {
@@ -449,6 +513,7 @@ function activate(context) {
     // 注册配置变更监听
     const configChangeListener = vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration('gitWorkSummary')) {
+            (0, logger_1.log)('📝 检测到 Git Work Summary 配置变更，开始更新...');
             gitWorkSummaryManager.updateConfiguration();
         }
     });
@@ -458,7 +523,7 @@ function activate(context) {
         vscode.window.showErrorMessage(`启动 Git Work Summary 失败: ${error}`);
     });
     // 注册到上下文
-    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, printPromptsCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager, showLogsCommand);
+    context.subscriptions.push(generateDailyReportCommand, generateDailyReportForDateCommand, showUncommittedSummaryCommand, configureCommand, viewHistoryCommand, generateWeeklyReportCommand, generateWeeklyReportForDateCommand, resetProcessedCommitsCommand, debugGitStatusCommand, testAICommand, testConfigUpdateCommand, printPromptsCommand, showCurrentPromptsCommand, debugMultiProjectCommand, quickSetupMultiProjectCommand, configChangeListener, gitWorkSummaryManager, showLogsCommand);
     // 显示启动消息
     vscode.window.showInformationMessage('Git Work Summary 扩展已启动，开始定时监控今日代码变更并生成日报');
 }
