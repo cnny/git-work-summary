@@ -281,36 +281,37 @@ function activate(context) {
             else {
                 (0, logger_1.log)('\n⏭️ 上报URL未配置，跳过上报服务测试');
             }
-            (0, logger_1.log)('\n✅ 配置测试完成');
-            vscode.window.showInformationMessage('配置测试完成，请查看"Git Work Summary"输出通道查看详细信息。' +
-                '现在可以修改配置并观察是否立即生效（无需重启）。');
+            (0, logger_1.log)('\n✅ Configuration test completed | 配置测试完成');
+            vscode.window.showInformationMessage('Configuration test completed. Please check the "Git Work Summary" output channel for detailed information. ' +
+                'You can now modify configurations and observe if they take effect immediately (no restart required). | ' +
+                '配置测试完成，请查看"Git Work Summary"输出通道查看详细信息。现在可以修改配置并观察是否立即生效（无需重启）。');
         }
         catch (error) {
-            (0, logger_1.log)(`❌ 配置测试失败: ${error}`);
-            vscode.window.showErrorMessage(`配置测试失败: ${error}`);
+            (0, logger_1.log)(`❌ Configuration test failed | 配置测试失败: ${error}`);
+            vscode.window.showErrorMessage(`Configuration test failed | 配置测试失败: ${error}`);
         }
     });
     const testAICommand = vscode.commands.registerCommand('gitWorkSummary.testAI', async () => {
         try {
-            (0, logger_1.log)('\n🧪 测试AI连接...');
+            (0, logger_1.log)('\n🧪 Testing AI connection | 测试AI连接...');
             const success = await aiService.testConnection();
             if (success) {
-                (0, logger_1.log)('✅ AI连接测试成功');
-                vscode.window.showInformationMessage('AI连接测试成功');
+                (0, logger_1.log)('✅ AI connection test successful | AI连接测试成功');
+                vscode.window.showInformationMessage('AI connection test successful | AI连接测试成功');
             }
             else {
-                (0, logger_1.log)('❌ AI连接测试失败');
-                vscode.window.showErrorMessage('AI连接测试失败，请检查配置');
+                (0, logger_1.log)('❌ AI connection test failed | AI连接测试失败');
+                vscode.window.showErrorMessage('AI connection test failed, please check configuration | AI连接测试失败，请检查配置');
             }
         }
         catch (error) {
-            (0, logger_1.log)(`AI连接测试失败: ${error}`);
-            vscode.window.showErrorMessage(`AI连接测试失败: ${error}`);
+            (0, logger_1.log)(`AI connection test failed | AI连接测试失败: ${error}`);
+            vscode.window.showErrorMessage(`AI connection test failed | AI连接测试失败: ${error}`);
         }
     });
     const showCurrentPromptsCommand = vscode.commands.registerCommand('gitWorkSummary.showCurrentPrompts', async () => {
         try {
-            (0, logger_1.log)('\n📝 生成当前提示词配置详情...');
+            (0, logger_1.log)('\n📝 Generating current prompt configuration details | 生成当前提示词配置详情...');
             // 获取真实的提示词内容
             const content = aiService.getCurrentPrompts();
             // 创建新文档显示
@@ -319,12 +320,12 @@ function activate(context) {
                 language: 'markdown'
             });
             await vscode.window.showTextDocument(doc);
-            (0, logger_1.log)('✅ 提示词配置详情已生成');
-            vscode.window.showInformationMessage('提示词配置详情已生成，包含实际的系统和用户提示词内容');
+            (0, logger_1.log)('✅ Prompt configuration details generated | 提示词配置详情已生成');
+            vscode.window.showInformationMessage('Prompt configuration details generated, including actual system and user prompt content | 提示词配置详情已生成，包含实际的系统和用户提示词内容');
         }
         catch (error) {
-            (0, logger_1.log)(`显示当前提示词失败: ${error}`);
-            vscode.window.showErrorMessage(`显示当前提示词失败: ${error}`);
+            (0, logger_1.log)(`Show current prompts failed | 显示当前提示词失败: ${error}`);
+            vscode.window.showErrorMessage(`Show current prompts failed | 显示当前提示词失败: ${error}`);
         }
     });
     const debugMultiProjectCommand = vscode.commands.registerCommand('gitWorkSummary.debugMultiProject', async () => {

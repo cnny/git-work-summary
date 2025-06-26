@@ -2,7 +2,7 @@
   "name": "git-work-summary",
   "displayName": "Git Work Summary",
   "description": "定时提取 git 变更并生成工作总结",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "publisher": "Cann",
   "author": {
     "name": "cnny"
@@ -186,6 +186,11 @@
           "maximum": 300,
           "description": "AI 服务调用超时时间（秒），推理模型建议设置更长时间"
         },
+        "gitWorkSummary.AIOutputlanguage": {
+          "type": "string",
+          "default": "中文",
+          "description": "设置 AI 生成工作总结时使用的语言，可以输入任意语言（如：中文、English、中英双语、Français、Español等）"
+        },
         "gitWorkSummary.customPrompts": {
           "type": "object",
           "default": {},
@@ -200,6 +205,13 @@
           "type": "number",
           "default": 50,
           "description": "每次处理的最大 commit 数量"
+        },
+        "gitWorkSummary.maxFilesPerCommit": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "每个提交在报告中显示的最大文件数量，避免文件列表过长"
         },
         "gitWorkSummary.onlyMyCommits": {
           "type": "boolean",

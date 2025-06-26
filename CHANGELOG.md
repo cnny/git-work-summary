@@ -14,6 +14,52 @@
 
 Git Work Summary 扩展的所有重要变更都记录在此文件中。
 
+## [1.2.0] - 2025-01-25
+
+### 🎉 新增
+- 🎛️ **新增 `maxFilesPerCommit` 配置项**：控制每个提交在报告中显示的文件数量
+  - 默认显示3个文件，可配置范围1-20
+  - 超出限制显示"... 等共X个文件"，避免报告内容过长
+  - 支持配置界面和VS Code设置调整
+
+- 🌐 **新增 `AIOutputlanguage` 配置项**：设置AI输出语言
+  - 支持任意语言输入（中文、English、Français、Español等）
+
+- 🔄 **配置页面双语支持**：添加中英文双语界面切换
+  - 右上角语言切换按钮（🌐 EN / 🌐 中文）
+  - 所有标签、帮助文本、按钮支持实时语言切换
+  - 支持包含HTML标签的帮助文本正确显示
+
+### ✨ 增强
+- 🎨 **配置界面全面国际化**：
+  - 为所有主要配置项添加中英文双语标签
+  - 优化帮助文本，提供更清晰的配置指导
+  - 输入框占位符支持双语提示
+
+- 📝 **文档结构优化**：
+  - 合并提示词配置文档：从4个精简为2个
+  - `PROMPT_CUSTOMIZATION.md` 整合了配置示例和多项目配置指南
+  - 删除冗余文档 `EXAMPLE_PROMPTS.md` 和 `MULTI_PROJECT_PROMPT_CONFIG.md`
+  - 更新README中的文档索引链接
+
+### 🛠️ 技术改进
+
+- **用户体验优化**：
+  - 语言切换功能支持HTML内容正确渲染
+  - 配置界面响应式设计改进
+  - 实时语言切换无需页面刷新
+
+### 📦 文件变更
+- **新增**：完善的双语配置界面支持
+- **删除**：`EXAMPLE_PROMPTS.md`、`MULTI_PROJECT_PROMPT_CONFIG.md`
+- **修改**：`PROMPT_CUSTOMIZATION.md`（整合内容）、`README.md`（更新文档链接）
+
+### 🎯 用户价值
+- **更灵活的文件显示控制**：根据需要调整报告详细程度
+- **多语言输出支持**：AI可生成任意语言的工作总结
+- **国际化用户体验**：中英文用户都能享受本地化配置界面
+- **精简的文档结构**：更易于查找和使用配置指南
+
 ## [1.1.6] - 2025-01-24
 
 ### ✨ 增强
@@ -250,6 +296,56 @@ Git Work Summary 扩展的所有重要变更都记录在此文件中。
 # Change Log
 
 All notable changes to the "Git Work Summary" extension are documented in this file.
+
+## [1.2.0] - 2025-01-25
+
+### 🎉 Added
+- 🎛️ **Added `maxFilesPerCommit` configuration item**: Control the number of files displayed per commit in reports
+  - Default shows 3 files, configurable range 1-20
+  - Shows "... and X more files" when limit exceeded to avoid overly long reports
+  - Supports configuration interface and VS Code settings adjustment
+
+- 🌐 **Added `AIOutputlanguage` configuration item**: Set AI output language
+  - Supports any language input (Chinese, English, Bilingual, Français, Español, etc.)
+
+- 🔄 **Configuration page bilingual support**: Added Chinese-English interface switching
+  - Language toggle button in top-right corner (🌐 EN / 🌐 中文)
+  - All labels, help text, and buttons support real-time language switching
+  - Supports help text containing HTML tags for proper display
+
+### ✨ Enhanced
+- 🎨 **Comprehensive configuration interface internationalization**:
+  - Added bilingual labels for all major configuration items
+  - Optimized help text with clearer configuration guidance
+  - Input field placeholders support bilingual hints
+
+- 📝 **Documentation structure optimization**:
+  - Merged prompt configuration documents: streamlined from 4 to 2
+  - `PROMPT_CUSTOMIZATION.md` integrates configuration examples and multi-project configuration guide
+  - Removed redundant documents `EXAMPLE_PROMPTS.md` and `MULTI_PROJECT_PROMPT_CONFIG.md`
+  - Updated documentation index links in README
+
+### 🛠️ Technical Improvements
+- **Enhanced configuration validation**:
+  - `maxFilesPerCommit` range validation (1-20)
+  - `AIOutputlanguage` non-empty validation
+  - Configuration test added related item checks
+
+- **User experience optimization**:
+  - Language switching supports proper HTML content rendering
+  - Improved responsive design for configuration interface
+  - Real-time language switching without page refresh
+
+### 📦 File Changes
+- **Added**: Complete bilingual configuration interface support
+- **Deleted**: `EXAMPLE_PROMPTS.md`, `MULTI_PROJECT_PROMPT_CONFIG.md`
+- **Modified**: `PROMPT_CUSTOMIZATION.md` (integrated content), `README.md` (updated doc links)
+
+### 🎯 User Value
+- **More flexible file display control**: Adjust report detail level as needed
+- **Multi-language output support**: AI can generate work summaries in any language
+- **Internationalized user experience**: Both Chinese and English users enjoy localized configuration interface
+- **Streamlined documentation structure**: Easier to find and use configuration guides
 
 ## [1.1.6] - 2025-01-24
 

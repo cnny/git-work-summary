@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ConfigurationManager } from './configurationManager';
 import { MainTask } from './gitWorkSummaryManager';
 import { log } from './logger';
+import { config } from 'process';
 
 export interface AISummaryResult {
     content: string;
@@ -378,10 +379,10 @@ export class AISummaryService {
                         prompt += `- 代码变更：+${commit.additions}/-${commit.deletions} 行\n`;
                         prompt += `- 修改文件（${commit.files.length}个）：\n`;
                         
-                        commit.files.slice(0, 3).forEach((file: string, fileIndex: number) => {
+                        commit.files.slice(0, config.maxFilesPerCommit ? config.maxFilesPerCommit : 3).forEach((file: string, fileIndex: number) => {
                             prompt += `  ${fileIndex + 1}. ${file}\n`;
                         });
-                        if (commit.files.length > 3) {
+                        if (commit.files.length > config.maxFilesPerCommit ? config.maxFilesPerCommit : 3) {
                             prompt += `  ... 等共${commit.files.length}个文件\n`;
                         }
                         
@@ -443,7 +444,8 @@ export class AISummaryService {
     ): string {
         const startDate = period.start.toLocaleDateString('zh-CN');
         const endDate = period.end.toLocaleDateString('zh-CN');
-        
+        const config = this.configManager.getConfiguration();
+
         // 构建提交信息字符串
         let commitsInfo = '';
         if (commits.length > 0) {
@@ -460,7 +462,14 @@ export class AISummaryService {
                 commitsInfo += `- 作者: ${commit.author}\n`;
                 commitsInfo += `- 项目: ${commit.projectName || '未知项目'}\n`;
                 commitsInfo += `- 变更: +${commit.additions}/-${commit.deletions} 行\n`;
-                commitsInfo += `- 文件: ${commit.files.join(', ')}\n\n`;
+
+                commit.files.slice(0, config.maxFilesPerCommit ? config.maxFilesPerCommit : 3).forEach((file: string, fileIndex: number) => {
+                    commitsInfo += `  ${fileIndex + 1}. ${file}\n`;
+                });
+                if (commit.files.length > config.maxFilesPerCommit ? config.maxFilesPerCommit : 3) {
+                    commitsInfo += `  ... 等共${commit.files.length}个文件\n`;
+                }
+                commitsInfo += `\n\n`;
             });
         } else {
             commitsInfo = `${reportType === 'daily' ? '今日' : '本周'}无提交记录\n`;
@@ -531,7 +540,7 @@ ${isMultiProject ? '- 智能识别跨项目的同一功能，避免重复描述\
 - 避免过度解释和分析
 
 输出要求：
-- 使用中文，内容简洁
+- 使用${config.AIOutputlanguage}，内容简洁
 - 严格JSON格式，确保可解析
 - 客观描述工作内容${isMultiProject ? '\n- 跨项目功能请在描述中说明涉及的项目' : ''}`;
         } else {
@@ -549,7 +558,7 @@ ${isMultiProject ? '- 识别跨项目协作的功能，合并描述\n- 避免将
 - 实事求是地总结工作
 
 输出要求：
-- 使用中文，格式为标准JSON
+- 使用${config.AIOutputlanguage}，格式为标准JSON
 - 内容简洁明了${isMultiProject ? '\n- 跨项目协作请在描述中说明项目分工' : ''}`;
         }
     }
@@ -663,6 +672,7 @@ ${isMultiProject ? '- 识别跨项目协作的功能，合并描述\n- 避免将
     }
 
     private getUncommittedSummarySystemPrompt(): string {
+        const config = this.configManager.getConfiguration();
         return `你是一个专业的代码变更分析助手。你的任务是：
 
 1. 分析当前工作区的代码变更
@@ -670,7 +680,7 @@ ${isMultiProject ? '- 识别跨项目协作的功能，合并描述\n- 避免将
 3. 生成简洁的功能摘要
 
 要求：
-- 使用中文
+- 使用${config.AIOutputlanguage}
 - 不超过100字
 - 重点说明正在开发的功能或修复的问题
 - 区分已暂存和未暂存的变更
