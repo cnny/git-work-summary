@@ -1,3 +1,15 @@
+# Weekly Report Time Range Configuration Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # 周报时间范围配置指南
 
 ## 概述
@@ -156,4 +168,176 @@ Git Work Summary 扩展支持自定义周报的时间范围，以适应不同公
 
 ---
 
-💡 **提示**: 建议根据团队的实际工作周期选择合适的配置，确保周报能够准确反映团队的工作情况。 
+💡 **提示**: 建议根据团队的实际工作周期选择合适的配置，确保周报能够准确反映团队的工作情况。
+
+---
+
+## English Version
+
+# Weekly Report Time Range Configuration Guide
+
+## Overview
+
+The Git Work Summary extension supports customizing weekly report time ranges to adapt to different company development cycles. By configuring the `weekStartDay` parameter, you can set the start date for weekly reports.
+
+## Configuration Parameters
+
+### `weekStartDay`
+- **Type**: `number`
+- **Default**: `1` (Monday)
+- **Options**: `0-6` (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday)
+- **Description**: Set the start date for weekly reports
+
+## Common Enterprise Cycle Configurations
+
+### 1. Monday to Friday Work Week (Recommended)
+```json
+{
+  "gitWorkSummary.weekStartDay": 1
+}
+```
+- **Use Case**: Traditional enterprises, most companies
+- **Report Range**: Monday 00:00 ~ Sunday 23:59
+- **Advantage**: Aligns with most people's work habits
+
+### 2. Friday to Thursday Work Week
+```json
+{
+  "gitWorkSummary.weekStartDay": 5
+}
+```
+- **Use Case**: Agile development teams, Sprint cycles
+- **Report Range**: Friday 00:00 ~ Thursday 23:59
+- **Advantage**: Suitable for teams that start sprints on Friday
+
+### 3. Sunday to Saturday Work Week
+```json
+{
+  "gitWorkSummary.weekStartDay": 0
+}
+```
+- **Use Case**: Some international companies
+- **Report Range**: Sunday 00:00 ~ Saturday 23:59
+- **Advantage**: Aligns with international standard calendar
+
+## Configuration Methods
+
+### Method 1: Through Extension Configuration Interface
+1. Open VS Code command palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
+2. Type `Git Work Summary: Configure Settings`
+3. Find "Weekly Start Day" option in configuration interface
+4. Select appropriate start date
+5. Click "Save Configuration"
+
+### Method 2: Through settings.json
+1. Open VS Code settings (`Ctrl+,` or `Cmd+,`)
+2. Click "Open Settings (JSON)" icon in top right
+3. Add the following configuration:
+```json
+{
+  "gitWorkSummary.weekStartDay": 1
+}
+```
+
+### Method 3: Through Workspace Settings
+Create `.vscode/settings.json` file in project root:
+```json
+{
+  "gitWorkSummary.weekStartDay": 1
+}
+```
+
+## Configuration Examples Comparison
+
+Assuming current date is **January 17, 2024 (Wednesday)**, weekly report ranges under different configurations:
+
+| Config Value | Start Day | Report Range | Use Case |
+|--------------|-----------|--------------|----------|
+| 0 | Sunday | 2024/1/14 ~ 2024/1/20 | International standard week |
+| 1 | Monday | 2024/1/15 ~ 2024/1/21 | Traditional work week |
+| 2 | Tuesday | 2024/1/16 ~ 2024/1/22 | Special requirements |
+| 3 | Wednesday | 2024/1/17 ~ 2024/1/23 | Special requirements |
+| 4 | Thursday | 2024/1/11 ~ 2024/1/17 | Special requirements |
+| 5 | Friday | 2024/1/12 ~ 2024/1/18 | Agile development |
+| 6 | Saturday | 2024/1/13 ~ 2024/1/19 | Special requirements |
+
+## Important Notes
+
+1. **Configuration Effect**: Configuration takes effect when generating next weekly report
+2. **Historical Data**: Configuration changes do not affect already generated historical weekly reports
+3. **Multi-Project**: In multi-project mode, all projects use the same weekly report time range configuration
+4. **Scheduled Tasks**: Scheduled weekly reports also use the new time range configuration
+
+## Real Application Scenarios
+
+### Scenario 1: Traditional Enterprise
+```json
+{
+  "gitWorkSummary.weekStartDay": 1,
+  "gitWorkSummary.weeklyReportDay": 5
+}
+```
+- Report Range: Monday to Sunday
+- Generation Time: Every Friday
+
+### Scenario 2: Agile Team
+```json
+{
+  "gitWorkSummary.weekStartDay": 5,
+  "gitWorkSummary.weeklyReportDay": 4
+}
+```
+- Report Range: Friday to Thursday
+- Generation Time: Every Thursday
+
+### Scenario 3: International Team
+```json
+{
+  "gitWorkSummary.weekStartDay": 0,
+  "gitWorkSummary.weeklyReportDay": 6
+}
+```
+- Report Range: Sunday to Saturday
+- Generation Time: Every Saturday
+
+## Troubleshooting
+
+### Issue 1: Configuration changes not taking effect
+**Solution**: 
+1. Reload VS Code window (`Ctrl+Shift+P` → `Developer: Reload Window`)
+2. Or restart VS Code
+
+### Issue 2: Weekly report time range doesn't match expectations
+**Solution**:
+1. Check if `weekStartDay` configuration value is correct
+2. Confirm understanding of weekly report range calculation logic
+3. Verify time range by manually generating weekly report
+
+### Issue 3: Inconsistent time ranges in multi-project mode
+**Solution**:
+1. Ensure all projects use same global configuration
+2. Avoid setting different workspace configurations in different projects
+
+### Issue 4: Weekly report displays abnormal range (e.g., "This Friday to This Friday")
+**Fixed**: This issue has been fixed in the latest version
+- **Root Cause**: Incorrect end date calculation in earlier versions
+- **Fix Content**: Weekly reports now always display complete 7-day range
+- **Verification**: Regenerate weekly report, confirm display as "start day ~ start day+6 days"
+
+## Related Configuration
+
+- `gitWorkSummary.weeklyReportDay`: Set automatic weekly report generation date
+- `gitWorkSummary.enableWeeklyReport`: Enable/disable weekly report feature
+- `gitWorkSummary.enableMultiProject`: Enable multi-project mode
+
+---
+
+💡 **Tip**: It's recommended to choose appropriate configuration based on your team's actual work cycle to ensure weekly reports accurately reflect team work situations.
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#weekly-report-time-range-configuration-guide)**
+
+</div> 

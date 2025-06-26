@@ -1,3 +1,15 @@
+# Git Work Summary Installation Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # Git Work Summary 扩展安装指南
 
 ## 📦 安装方法
@@ -105,4 +117,125 @@ A:
 
 ---
 
-**安装完成后，开始享受智能化的工作总结体验！** 🎉 
+**安装完成后，开始享受智能化的工作总结体验！** 🎉
+
+---
+
+## English Version
+
+# Git Work Summary Extension Installation Guide
+
+## 📦 Installation Methods
+
+### Method 1: Install via VSIX File (Recommended)
+
+1. **Download Extension File**
+   - Get the `git-work-summary-1.0.0.vsix` file
+
+2. **Install in VS Code**
+   - Open VS Code
+   - Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS) to open command palette
+   - Type `Extensions: Install from VSIX...`
+   - Select the downloaded `git-work-summary-1.0.0.vsix` file
+   - Wait for installation to complete
+
+3. **Verify Installation**
+   - Restart VS Code
+   - Press `Ctrl+Shift+P` to open command palette
+   - Type `Git Work Summary` and you should see related commands
+
+### Method 2: Install via Command Line
+
+```bash
+code --install-extension git-work-summary-1.0.0.vsix
+```
+
+## ⚙️ Initial Configuration
+
+After installation, you need to set up basic configuration:
+
+### 1. Open Configuration
+- Press `Ctrl+Shift+P` to open command palette
+- Type `Git Work Summary: Configure Settings`
+- Or search for `Git Work Summary` in settings
+
+### 2. Required Configuration
+```json
+{
+  "gitWorkSummary.aiProvider": "deepseek",
+  "gitWorkSummary.aiApiKey": "your-api-key-here"
+}
+```
+
+### 3. Get API Key
+
+**DeepSeek (Recommended)**:
+1. Visit [https://platform.deepseek.com/](https://platform.deepseek.com/)
+2. Register and login to your account
+3. Create a new API Key in the API Keys page
+4. Copy the API Key to your configuration
+
+**OpenAI**:
+1. Visit [https://platform.openai.com/](https://platform.openai.com/)
+2. Register and login to your account
+3. Create a new API Key in the API Keys page
+4. Set in configuration:
+   ```json
+   {
+     "gitWorkSummary.aiProvider": "openai",
+     "gitWorkSummary.aiApiKey": "your-openai-api-key"
+   }
+   ```
+
+## 🚀 Quick Start
+
+1. **Generate First Daily Report**
+   - Press `Ctrl+Shift+P`
+   - Type `Git Work Summary: Generate Today's Daily Report`
+   - Wait for generation to complete
+
+2. **View Report History**
+   - Press `Ctrl+Shift+P`
+   - Type `Git Work Summary: View Report History`
+
+3. **Configure Multi-Project (Optional)**
+   - Press `Ctrl+Shift+P`
+   - Type `Git Work Summary: Quick Setup Multi-Project`
+
+## 🔧 Common Issues
+
+### Q: Cannot find commands after installation?
+A: Please restart VS Code to ensure the extension is fully loaded.
+
+### Q: AI call failed?
+A: 
+1. Check if API Key is correct
+2. Confirm network connection is normal
+3. Use `Test AI Configuration` command to test
+
+### Q: No reports generated?
+A: 
+1. Ensure current project is a Git repository
+2. Check if there are commit records
+3. View VS Code developer console for error messages
+
+## 📞 Technical Support
+
+If you encounter issues, please:
+1. Check VS Code developer console (`Help` → `Toggle Developer Tools` → `Console`)
+2. Use debug commands to check status:
+   - `Git Work Summary: Debug Git Status`
+   - `Git Work Summary: Test AI Configuration`
+3. Submit an Issue to the project repository
+
+---
+
+**After installation, start enjoying the intelligent work summary experience!** 🎉
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#git-work-summary-installation-guide)**
+
+</div> 

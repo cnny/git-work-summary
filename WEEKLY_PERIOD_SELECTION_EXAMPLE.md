@@ -1,3 +1,15 @@
+# Weekly Period Selection Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # 周报指定周期功能使用指南
 
 ## 概述
@@ -164,4 +176,184 @@ Git Work Summary 扩展现在支持生成指定周期的周报，不再局限于
 
 ---
 
-💡 **提示**: 使用指定周期功能可以大大提高工作报告的灵活性，特别适合需要补录历史报告或进行工作回顾的场景。 
+💡 **提示**: 使用指定周期功能可以大大提高工作报告的灵活性，特别适合需要补录历史报告或进行工作回顾的场景。
+
+---
+
+## English Version
+
+# Weekly Period Selection Feature Guide
+
+## Overview
+
+The Git Work Summary extension now supports generating weekly reports for specified periods, no longer limited to generating only "current week" reports. You can easily generate reports for last week, two weeks ago, or any week containing a specified date.
+
+## Features
+
+### 🎯 Flexible Period Selection
+- **Preset Periods**: This week, last week, two weeks ago, three weeks ago, four weeks ago
+- **Custom Dates**: Enter any date to generate a report for the week containing that date
+- **Smart Calculation**: Automatically calculate correct weekly report ranges based on configured `weekStartDay`
+
+### 📅 Full Compatibility with Existing Configuration
+- Support all `weekStartDay` configurations (Sunday to Saturday)
+- Support single-project and multi-project modes
+- Full compatibility with existing weekly report time range configurations
+
+## Usage
+
+### Method 1: Through Command Palette
+1. Open VS Code command palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
+2. Type `Git Work Summary: Generate Weekly Report for Period`
+3. Select period from dropdown menu:
+   - **This Week** - Current week's work report
+   - **Last Week** - Previous week's work report
+   - **Two Weeks Ago** - Two weeks ago work report
+   - **Three Weeks Ago** - Three weeks ago work report
+   - **Four Weeks Ago** - Four weeks ago work report
+   - **Custom** - Select specific date
+
+### Method 2: Custom Date Input
+1. Select "Custom" in period selection
+2. Enter date format: `YYYY-MM-DD` (e.g., `2024-01-15`)
+3. System automatically generates report for the week containing that date
+
+## Usage Examples
+
+### Example 1: Generate Last Week's Report
+Assuming today is January 17, 2024 (Wednesday), `weekStartDay` configured as 1 (Monday start):
+
+1. Select "Last Week"
+2. System calculates report range: **2024/1/8 Monday ~ 2024/1/14 Sunday**
+3. Generate complete work report for last week
+
+### Example 2: Generate Report for Specific Date
+Want to generate report containing January 10, 2024:
+
+1. Select "Custom"
+2. Enter date: `2024-01-10`
+3. System calculates report range: **2024/1/8 Monday ~ 2024/1/14 Sunday**
+4. Generate work report for that week
+
+### Example 3: Agile Team Reports
+If your team uses Friday to Thursday work weeks (`weekStartDay = 5`):
+
+- **This Week**: 2024/1/12 Friday ~ 2024/1/18 Thursday
+- **Last Week**: 2024/1/5 Friday ~ 2024/1/11 Thursday
+- **Two Weeks Ago**: 2023/12/29 Friday ~ 2024/1/4 Thursday
+
+## Configuration
+
+### Weekly Start Day Configuration
+The feature automatically uses your configured `weekStartDay` setting:
+
+```json
+{
+  "gitWorkSummary.weekStartDay": 1  // Monday start (default)
+}
+```
+
+Different configuration effects:
+- `0` (Sunday): Sunday ~ Saturday
+- `1` (Monday): Monday ~ Sunday ⭐ Recommended
+- `5` (Friday): Friday ~ Thursday (Agile teams)
+
+### Multi-Project Support
+If multi-project feature is enabled, specified period reports will automatically:
+- Merge commit records from all configured projects
+- Generate unified cross-project analysis reports
+- Display contribution statistics for each project
+
+## Real-World Use Cases
+
+### Scenario 1: Report Backfill
+**Situation**: Forgot to generate last week's report, need to backfill
+**Action**:
+1. Use "Generate Weekly Report for Period"
+2. Select "Last Week"
+3. System automatically generates complete report for last week
+
+### Scenario 2: Project Review
+**Situation**: Need to review project progress from three weeks ago
+**Action**:
+1. Select "Three Weeks Ago"
+2. View work summary and commit records for that period
+3. Analyze project development trajectory
+
+### Scenario 3: Cross-Period Analysis
+**Situation**: Need to analyze work situation for specific time period
+**Action**:
+1. Use custom date feature
+2. Enter any date within target time period
+3. Generate detailed report for that period
+
+### Scenario 4: Team Reporting
+**Situation**: Monthly reporting needs data from each week
+**Action**:
+1. Generate weekly reports for each week of the month
+2. Compare workload and progress across different periods
+3. Form complete monthly analysis
+
+## Important Notes
+
+### 1. Data Integrity
+- Weekly reports include all commit records within specified period
+- If no commits exist for that period, appropriate message will be displayed
+- Historical data accuracy depends on completeness of Git records
+
+### 2. Configuration Consistency
+- All weekly reports use same `weekStartDay` configuration
+- Ensure consistency before and after configuration changes
+- In multi-project mode, all projects use unified configuration
+
+### 3. Performance Considerations
+- Earlier period reports may require longer processing time
+- Multi-project mode analyzes all projects sequentially
+- Recommended to use when network and system resources are sufficient
+
+## Troubleshooting
+
+### Issue 1: Cannot find commit records for specified period
+**Solution**:
+1. Confirm there are indeed commit records within that period
+2. Check if `onlyMyCommits` configuration filtered out other people's commits
+3. Verify `scanAllBranches` configuration includes all branches
+
+### Issue 2: Weekly report time range doesn't match expectations
+**Solution**:
+1. Check if `weekStartDay` configuration is correct
+2. Confirm understanding of weekly report range calculation logic
+3. Refer to [Weekly Range Configuration Guide](./WEEKLY_RANGE_CONFIG_EXAMPLE.md)
+
+### Issue 3: Some projects fail in multi-project mode
+**Solution**:
+1. Check if project paths are correct and accessible
+2. Confirm all projects are valid Git repositories
+3. View detailed error messages in console output
+
+## Related Commands Comparison
+
+| Command | Function | Use Case |
+|---------|----------|----------|
+| `Generate Weekly Report` | Generate current week report | Daily weekly report generation |
+| `Generate Weekly Report for Period` | Generate specified period report | Backfill, review, analysis |
+| `Generate Multi-Project Weekly Report` | Generate multi-project current week report | Multi-project daily weekly reports |
+
+## Related Configuration
+
+- `gitWorkSummary.weekStartDay`: Weekly report start date
+- `gitWorkSummary.enableMultiProject`: Enable multi-project feature
+- `gitWorkSummary.onlyMyCommits`: Only analyze current user commits
+- `gitWorkSummary.scanAllBranches`: Scan all branches
+
+---
+
+💡 **Tip**: Using the specified period feature can greatly improve work report flexibility, especially suitable for scenarios requiring historical report backfilling or work reviews.
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#weekly-period-selection-guide)**
+
+</div> 

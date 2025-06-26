@@ -1,3 +1,15 @@
+# Prompt Inspection Feature Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # 提示词查看功能使用指南
 
 ## 功能概述
@@ -149,4 +161,169 @@ A: 模拟数据仅用于演示格式，实际使用时会使用真实的 Git 数
 ### Q: 如何验证配置是否生效？
 A: 启用提示词日志，在实际使用中查看控制台输出的真实提示词
 
-通过这个功能，您可以完全掌控 AI 分析的提示词内容，实现更精准的工作总结效果！ 
+通过这个功能，您可以完全掌控 AI 分析的提示词内容，实现更精准的工作总结效果！
+
+---
+
+## English Version
+
+# Prompt Inspection Feature Guide
+
+## Feature Overview
+
+The Git Work Summary extension provides a powerful prompt inspection feature that allows you to view the actual prompt content sent to AI in real-time, helping you understand and optimize AI analysis effectiveness.
+
+## 🔍 View Current Prompts
+
+### Usage
+1. Press `Ctrl+Shift+P` to open command palette
+2. Type `Git Work Summary: Show Current Prompts`
+3. Select and execute the command
+
+### Features
+- 📝 **Display Real Content**: Show complete prompts actually sent to AI
+- 🔧 **Configuration Status Check**: Display current AI service and project configuration status
+- 📋 **Mock Data Demo**: Use mock data to demonstrate prompt effects
+- 💡 **Configuration Suggestions**: Provide targeted configuration optimization suggestions
+
+## 📊 Content Details
+
+### 1. AI Service Configuration
+Display current AI service configuration status:
+- AI provider (DeepSeek, OpenAI, etc.)
+- AI model name
+- API address and timeout settings
+- API Key configuration status
+- Prompt logging switch status
+
+### 2. Project Configuration
+Display multi-project feature configuration status:
+- Whether multi-project mode is enabled
+- Number and list of configured projects
+- Project name mapping relationships
+
+### 3. Custom Prompt Configuration
+Display current custom prompt configuration in JSON format:
+```json
+{
+  "dailySystemPrompt": "You are a professional daily report analyst...",
+  "weeklySystemPrompt": "You are a weekly report analyst...",
+  "dailyUserPromptTemplate": "Please generate a daily report for {date}..."
+}
+```
+
+### 4. Actual System Prompts
+Display real system prompt content:
+- **Daily System Prompt**: Define AI's role and behavior when analyzing daily reports
+- **Weekly System Prompt**: Define AI's role and behavior when analyzing weekly reports
+
+### 5. Actual User Prompt Examples
+Use mock data to show complete user prompts:
+- **Daily User Prompt Example**: Contains simulated commit data and project statistics
+- **Weekly User Prompt Example**: Shows weekly report format prompt structure
+
+### 6. Uncommitted Changes Analysis Prompt
+Display system prompt used when analyzing uncommitted changes
+
+### 7. Placeholder Descriptions
+Detailed explanation of placeholders supported in user prompt templates:
+- `{commits}`: Commit information details
+- `{projectStats}`: Project statistics information
+- `{commitsCount}`: Total number of commits
+- `{projectCount}`: Number of projects involved
+- `{date}`: Report date (daily report)
+- `{startDate}` / `{endDate}`: Date range (weekly report)
+
+### 8. Configuration Suggestions
+Provide personalized suggestions based on current configuration:
+- ⚠️ API Key not configured reminder
+- 💡 Suggest enabling prompt logging
+- ⚠️ Multi-project configuration issue reminder
+- 💡 Custom prompt configuration suggestions
+
+## 🛠️ Real-time Prompt Logging
+
+### Enable Method
+1. Enable `"enablePromptLogging": true` in configuration
+2. Open VS Code output panel: `Ctrl+Shift+U`
+3. Select "Git Work Summary" channel
+
+### Log Content
+After enabling, each AI call will output to console:
+```
+=== AI Prompt Log ===
+System Prompt:
+You are a daily work report analyst, your task is to...
+
+User Prompt:
+Please generate a daily work report for 2024-01-15:...
+==================
+```
+
+## 📝 Usage Scenarios
+
+### 1. Debug Custom Prompts
+- Check if custom configuration is effective
+- Compare differences between default and custom prompts
+- Verify if placeholder substitution is correct
+
+### 2. Optimize AI Analysis Effects
+- Analyze if current prompts meet expectations
+- Adjust prompt content based on actual output
+- Test effects of different prompt configurations
+
+### 3. Team Configuration Sharing
+- Export current configuration for team reference
+- Verify consistency of team member configurations
+- Establish standardized team prompts
+
+### 4. Troubleshooting
+- Check if configuration is correct
+- Verify if multi-project functionality is working
+- Troubleshoot abnormal AI analysis results
+
+## 🎯 Best Practices
+
+### 1. Regular Configuration Checks
+- View actual effects after modifying custom prompts
+- Regularly verify if configuration status is normal
+- Pay attention to configuration suggestions and optimize promptly
+
+### 2. Use Logging Feature
+- Enable prompt logging during debugging
+- Compare actual prompts under different configurations
+- Disable logging in production to improve performance
+
+### 3. Team Collaboration
+- Document viewed configurations
+- Share best configuration practices within team
+- Establish configuration change review process
+
+### 4. Continuous Optimization
+- Adjust prompts based on AI output effects
+- Collect team feedback to optimize configuration
+- Keep up with new features and update configuration
+
+## 🔧 Troubleshooting
+
+### Q: Error when viewing prompts?
+A: Check for syntax errors in custom prompt configuration, ensure JSON format is correct
+
+### Q: Displayed prompts don't match expectations?
+A: Check custom prompt priority, confirm if configuration is correctly applied
+
+### Q: Mock data not realistic enough?
+A: Mock data is only for demonstrating format, actual usage will use real Git data
+
+### Q: How to verify if configuration is effective?
+A: Enable prompt logging and check real prompts output in console during actual usage
+
+Through this feature, you can fully control the prompt content for AI analysis and achieve more precise work summary effects!
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#prompt-inspection-feature-guide)**
+
+</div> 

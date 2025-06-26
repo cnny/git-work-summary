@@ -1,3 +1,15 @@
+# Git Work Summary - Quick Start Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # Git Work Summary - 快速开始指南
 
 本指南帮助您快速配置和使用 Git Work Summary 扩展。
@@ -229,8 +241,301 @@ Ctrl+Shift+P → Git Work Summary: Show AI Prompts
 - ❌ 错误和警告信息
 - 📊 项目统计和提交数据
 
+## 📖 完整文档目录
+
+以下是完整的文档列表，帮助您深入了解和使用 Git Work Summary：
+
+### 📘 基础文档
+- **[📦 安装指南](https://github.com/cnny/git-work-summary/blob/master/INSTALLATION.md)** - 详细的安装步骤和方法
+- **[🔧 故障排除](https://github.com/cnny/git-work-summary/blob/master/TROUBLESHOOTING.md)** - 常见问题解决方案
+
+### 🎯 提示词配置
+- **[⚙️ 提示词自定义配置](https://github.com/cnny/git-work-summary/blob/master/PROMPT_CUSTOMIZATION.md)** - 完整的提示词配置指南，包含各种场景示例和多项目配置
+- **[🔍 提示词查看功能](https://github.com/cnny/git-work-summary/blob/master/PROMPT_INSPECTION_GUIDE.md)** - 查看和调试提示词
+
+### 📊 周报配置
+- **[📅 周报指定周期功能](https://github.com/cnny/git-work-summary/blob/master/WEEKLY_PERIOD_SELECTION_EXAMPLE.md)** - 生成指定周期的周报
+- **[⏰ 周报时间范围配置](https://github.com/cnny/git-work-summary/blob/master/WEEKLY_RANGE_CONFIG_EXAMPLE.md)** - 自定义周报时间范围
+
+### 📋 版本信息
+- **[📄 更新日志](https://github.com/cnny/git-work-summary/blob/master/CHANGELOG.md)** - 版本更新历史和新功能
+
 ---
 
 🎉 **恭喜！** 您已完成 Git Work Summary 的配置。扩展现在会自动分析您的代码变更并生成智能工作总结。
 
-如有问题，请查看完整的 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) 或在[Github](https://github.com/cnny/git-work-summary)提交 Issue。 
+如有问题，请查看完整的 [故障排除指南](https://github.com/cnny/git-work-summary/blob/master/TROUBLESHOOTING.md) 或在 [GitHub](https://github.com/cnny/git-work-summary) 提交 Issue。
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#git-work-summary---quick-start-guide)**
+
+</div>
+
+## English Version
+
+# Git Work Summary - Quick Start Guide
+
+This guide helps you quickly configure and use the Git Work Summary extension.
+
+## 🚀 5-Minute Quick Setup
+
+### 1. Get AI API Key
+
+**Recommended: DeepSeek (Default)**
+1. Visit [DeepSeek Official Website](https://www.deepseek.com/)
+2. Register an account and apply for API Key
+3. Copy the API Key for later use
+
+**Optional: OpenAI**
+1. Visit [OpenAI Official Website](https://openai.com/)
+2. Register an account and apply for API Key
+3. Copy the API Key for later use
+
+### 2. Configure Extension
+
+1. **Open Configuration Interface**
+   - Press `Ctrl+Shift+P` (macOS: `Cmd+Shift+P`)
+   - Type `Git Work Summary: Configure`
+   - Press Enter to open configuration interface
+
+2. **Fill Required Configuration**
+   ```
+   ✅ AI API Key: [Paste your API Key]
+   ✅ Report URL: https://your-api.com/work-summary
+   ```
+
+3. **Optional Configuration Adjustments**
+   ```
+   📊 Enable Weekly Report: Enabled by default
+   ⏰ Timer Interval: 60 minutes (Recommended)
+   🔍 Only My Commits: Enabled (Recommended)
+   📄 Include Uncommitted Changes: Choose as needed
+   ```
+
+4. **Click "Save Configuration"**
+
+### 3. Start Using
+
+After configuration, the extension will automatically start working:
+- ✅ Check for new commits every hour
+- ✅ Automatically update daily reports
+- ✅ Generate weekly reports every Friday at 6:00 PM
+- ✅ Automatically report to your API
+
+## 📋 Core Features
+
+### 📅 Smart Daily Reports
+- **Auto Update**: Automatically update daily reports when new commits are detected
+- **One Report Per Day**: Generate only one report per day to avoid duplicates
+- **Smart Merge**: Merge related commits into complete work items
+- **Manual Generation**: Manually generate reports for any specified date
+
+### 📊 Smart Weekly Reports  
+- **Scheduled Generation**: Automatically generate every Friday at 6:00 PM (configurable)
+- **Manual Trigger**: Generate weekly summary anytime
+- **Project Integration**: Organize work content by functional modules
+- **Trend Analysis**: Analyze work efficiency and growth trajectory
+
+### 🤖 AI Smart Analysis
+- **Deep Understanding**: Analyze development intentions and identify business logic
+- **Work Assessment**: Evaluate work duration based on code volume
+- **Value Highlighting**: Highlight technical highlights and key issues
+- **Context Awareness**: Continuous analysis combined with historical work
+
+## 🎯 Common Commands
+
+| Command | Purpose | Shortcut |
+|---------|---------|----------|
+| Generate Daily Report | Generate today's daily report | `Ctrl+Shift+P` → Type daily |
+| Generate Weekly Report | Generate this week's report | `Ctrl+Shift+P` → Type weekly |
+| Configure | Open configuration interface | `Ctrl+Shift+P` → Type configure |
+| View History | View historical records | `Ctrl+Shift+P` → Type history |
+
+## ⚙️ Configuration Details
+
+### Basic Configuration
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `enabled` | `true` | Enable scheduled work summary |
+| `interval` | `60` | Timer interval (minutes) |
+| `aiApiKey` | - | AI API Key (required) |
+| `reportUrl` | - | Report API URL (required) |
+
+### Advanced Configuration
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `onlyMyCommits` | `true` | Only analyze current user's commits |
+| `scanAllBranches` | `true` | Scan all local branches |
+| `includeUncommittedChanges` | `false` | Include uncommitted changes in daily report |
+| `enableWeeklyReport` | `true` | Enable weekly work reports |
+| `weeklyReportDay` | `5` | Weekly report generation day (Friday) |
+| `aiTimeout` | `60` | AI service timeout (seconds) |
+
+### Prompt Configuration
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `customPrompts` | `{}` | Custom AI prompt configuration |
+| `enablePromptLogging` | `true` | Enable prompt logging output |
+
+## 🛠️ Testing and Debugging
+
+### Test AI Connection
+```
+Ctrl+Shift+P → Git Work Summary: Test AI
+```
+
+### View Prompts
+```
+Ctrl+Shift+P → Git Work Summary: Show AI Prompts
+```
+
+### View Execution Logs
+1. Open VS Code output panel: `Ctrl+Shift+U`
+2. Select "Git Work Summary" channel
+3. View detailed execution logs
+
+## 📤 API Report Example
+
+Your API will receive data in the following format:
+
+```json
+{
+  "id": "summary-1234567890-abc",
+  "timestamp": 1234567890000,
+  "type": "daily",
+  "date": "2024-01-15",
+  "summary": {
+    "content": "Completed user authentication module development today...",
+    "mainTasks": [
+      {
+        "title": "User Authentication System",
+        "description": "Implement registration, login and permission verification",
+        "subTasks": ["Registration API", "JWT Verification", "Permission Middleware"],
+        "duration": "6 hours",
+        "progress": "completed"
+      }
+    ]
+  },
+  "commits": {
+    "total": 5,
+    "details": [...]
+  },
+  "reportStatus": "success"
+}
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**Q: AI Service Call Failed**
+- Check if API Key is correct
+- Confirm network connection is normal
+- Check console error messages
+
+**Q: Report API Failed**
+- Check if API URL is correct
+- Confirm request header configuration
+- Check error messages returned by the API
+
+**Q: No Commits Detected**
+- Ensure workspace is a Git repository
+- Check if there are new commits
+- Confirm `onlyMyCommits` configuration
+
+### Debugging Methods
+1. Use `Test AI` command to test AI connection
+2. Use `Show Logs` command to view detailed logs
+3. Use `Debug Git Status` command to check Git status
+
+## 🎨 Custom Prompts
+
+To customize AI analysis behavior, configure prompts:
+
+```json
+{
+  "dailySystemPrompt": "You are a professional daily report analyst...",
+  "dailyUserPromptTemplate": "Please analyze work for {date}:\n{commits}"
+}
+```
+
+Supported placeholders:
+- `{commits}`: Commit information
+- `{history}`: Historical summary  
+- `{date}`: Date
+- `{startDate}`, `{endDate}`: Time range
+
+## 📚 Advanced Usage
+
+### Multi-branch Development
+- Enable `scanAllBranches` to scan all local branches
+- Enable `onlyMyCommits` to analyze only personal commits
+- Automatic deduplication ensures commits are not double-counted
+
+### Team Collaboration
+- Configure unified reporting API
+- Customize prompts to match team standards
+- Set appropriate timer intervals to avoid frequent requests
+
+### Data Backup
+- Use `View History` to view historical records
+- Support exporting historical data
+- Local storage of recent 100 records
+
+## 📋 View Runtime Logs
+
+If you need to view detailed runtime logs of the extension, you can do so through the following methods:
+
+### Method 1: Use Command
+1. Open command palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
+2. Type `Git Work Summary: Show Logs`
+3. Select the command, it will directly open the log output panel
+
+### Method 2: Manual Opening
+1. Open VS Code output panel: `Ctrl+Shift+U` (or `Cmd+Shift+U`)
+2. Select "Git Work Summary" channel in the dropdown
+3. View detailed execution logs
+
+### Log Content Includes:
+- ✅ Extension startup and configuration information
+- ⏰ Scheduled task execution status
+- 🔍 Git repository analysis process
+- 🤖 AI analysis results and timing
+- ❌ Error and warning messages
+- 📊 Project statistics and commit data
+
+## 📖 Complete Documentation Index
+
+Here is the complete documentation list to help you deeply understand and use Git Work Summary:
+
+### 📘 Basic Documentation
+- **[📦 Installation Guide](https://github.com/cnny/git-work-summary/blob/master/INSTALLATION.md)** - Detailed installation steps and methods
+- **[🔧 Troubleshooting](https://github.com/cnny/git-work-summary/blob/master/TROUBLESHOOTING.md)** - Common problem solutions
+
+### 🎯 Prompt Configuration
+- **[⚙️ Prompt Customization Guide](https://github.com/cnny/git-work-summary/blob/master/PROMPT_CUSTOMIZATION.md)** - Complete prompt configuration guide including various scenario examples and multi-project configurations
+- **[🔍 Prompt Inspection Feature](https://github.com/cnny/git-work-summary/blob/master/PROMPT_INSPECTION_GUIDE.md)** - View and debug prompts
+
+### 📊 Weekly Report Configuration
+- **[📅 Weekly Period Selection Feature](https://github.com/cnny/git-work-summary/blob/master/WEEKLY_PERIOD_SELECTION_EXAMPLE.md)** - Generate reports for specified periods
+- **[⏰ Weekly Time Range Configuration](https://github.com/cnny/git-work-summary/blob/master/WEEKLY_RANGE_CONFIG_EXAMPLE.md)** - Customize weekly report time ranges
+
+### 📋 Version Information
+- **[📄 Changelog](https://github.com/cnny/git-work-summary/blob/master/CHANGELOG.md)** - Version update history and new features
+
+---
+
+🎉 **Congratulations!** You have completed the Git Work Summary configuration. The extension will now automatically analyze your code changes and generate intelligent work summaries.
+
+If you have any questions, please check the complete [Troubleshooting Guide](https://github.com/cnny/git-work-summary/blob/master/TROUBLESHOOTING.md) or submit an Issue on [GitHub](https://github.com/cnny/git-work-summary).
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#git-work-summary---quick-start-guide)**
+
+</div>

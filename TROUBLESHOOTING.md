@@ -1,3 +1,15 @@
+# Git Work Summary Troubleshooting Guide
+
+<div align="center">
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+</div>
+
+---
+
+## 中文版本
+
 # Git Work Summary 故障排除指南
 
 ## 🚨 常见问题及解决方案
@@ -196,4 +208,216 @@ rm -rf ~/.vscode/extensions/git-work-summary-*
 
 ---
 
-**大多数问题可以通过重启编辑器或重新安装扩展解决** 🔄 
+**大多数问题可以通过重启编辑器或重新安装扩展解决** 🔄
+
+---
+
+## English Version
+
+# Git Work Summary Troubleshooting Guide
+
+## 🚨 Common Issues and Solutions
+
+### 1. Command Not Found (command 'gitWorkSummary.configure' not found)
+
+**Symptoms**:
+- Cannot find Git Work Summary commands in command palette after installation
+- "command not found" error when executing commands
+
+**Possible Causes**:
+1. Extension not properly activated
+2. VS Code/Cursor needs restart
+3. Incomplete extension installation
+
+**Solutions**:
+
+#### Step 1: Restart Editor
+```
+Close VS Code/Cursor → Reopen → Reload Window
+```
+
+#### Step 2: Check Extension Status
+1. Open Extensions panel (`Ctrl+Shift+X`)
+2. Search for "Git Work Summary"
+3. Confirm extension is enabled (no "Enable" button)
+
+#### Step 3: Manually Activate Extension
+```
+Ctrl+Shift+P → Type "Developer: Reload Window"
+```
+
+#### Step 4: Check Extension Logs
+1. Open Developer Tools: `Help` → `Toggle Developer Tools`
+2. Switch to `Console` tab
+3. Look for Git Work Summary related error messages
+
+#### Step 5: Reinstall Extension
+```bash
+# Uninstall current extension
+code --uninstall-extension git-work-summary
+
+# Reinstall
+code --install-extension git-work-summary-1.0.0.vsix
+```
+
+### 2. AI Call Failed
+
+**Symptoms**:
+- "AI connection failed" error
+- Errors when generating reports
+
+**Solutions**:
+
+#### Check API Key Configuration
+1. `Ctrl+Shift+P` → `Preferences: Open Settings (JSON)`
+2. Confirm configuration is correct:
+```json
+{
+  "gitWorkSummary.aiProvider": "deepseek",
+  "gitWorkSummary.aiApiKey": "your-api-key-here"
+}
+```
+
+#### Test AI Connection
+1. `Ctrl+Shift+P` → `Git Work Summary: Test AI Configuration`
+2. Check test results
+
+#### Check Network Connection
+- Ensure you can access the AI service provider's API
+- Check firewall and proxy settings
+
+### 3. Multi-Project Feature Issues
+
+**Symptoms**:
+- Multi-project daily report generation fails
+- Project path configuration invalid
+
+**Solutions**:
+
+#### Check Multi-Project Configuration
+1. `Ctrl+Shift+P` → `Git Work Summary: Debug Multi-Project Configuration`
+2. Check configuration status and project paths
+
+#### Verify Project Paths
+- Ensure paths exist and are Git repositories
+- Check path permissions
+
+#### Reconfigure Multi-Project
+1. `Ctrl+Shift+P` → `Git Work Summary: Quick Setup Multi-Project`
+2. Re-add project paths
+
+### 4. Scheduled Tasks Not Working
+
+**Symptoms**:
+- No automatic daily report generation
+- Scheduled checks not triggering
+
+**Solutions**:
+
+#### Check Basic Configuration
+```json
+{
+  "gitWorkSummary.enabled": true,
+  "gitWorkSummary.interval": 60
+}
+```
+
+#### Check Git Status
+1. `Ctrl+Shift+P` → `Git Work Summary: Debug Git Status`
+2. Confirm project is a Git repository with commit records
+
+#### View Console Logs
+- Open developer console to view scheduled task logs
+- Look for error messages
+
+### 5. Extension Failed to Load
+
+**Symptoms**:
+- Extension shows error in extension list
+- Cannot enable extension
+
+**Solutions**:
+
+#### Check VS Code Version
+- Ensure VS Code version >= 1.74.0
+- Update to latest version
+
+#### Check Dependencies
+```bash
+# In extension directory
+npm install
+npm run compile
+```
+
+#### Clear Cache
+```bash
+# Clear VS Code extension cache
+rm -rf ~/.vscode/extensions/git-work-summary-*
+```
+
+### 6. Abnormal Report Content
+
+**Symptoms**:
+- Empty report content
+- Inaccurate AI analysis results
+
+**Solutions**:
+
+#### Check Commit Records
+1. `Ctrl+Shift+P` → `Git Work Summary: Debug Git Status`
+2. Confirm there are analyzable commit records
+
+#### Adjust AI Prompts
+- Customize `customPrompts` in settings
+- Use `Show Current Prompts` to view current prompts
+
+#### Check Date Range
+- Confirm there are commits within the analyzed date range
+- Try generating reports for other dates
+
+## 🔧 Debug Tools
+
+### Built-in Debug Commands
+- `Debug Git Status` - Check Git status
+- `Debug Multi-Project Configuration` - Check multi-project configuration
+- `Test AI Configuration` - Test AI connection
+- `Show Current Prompts` - View current prompts
+
+### Log Viewing
+1. **VS Code Output Panel**:
+   - `View` → `Output` → Select "Git Work Summary"
+
+2. **Developer Console**:
+   - `Help` → `Toggle Developer Tools` → `Console`
+
+3. **Extension Logs**:
+   - View logs starting with `[Git Work Summary]` in console
+
+## 📞 Getting Help
+
+### Collect Diagnostic Information
+Run the following commands to collect diagnostic information:
+1. `Git Work Summary: Debug Git Status`
+2. `Git Work Summary: Test AI Configuration`
+3. `Git Work Summary: Debug Multi-Project Configuration`
+
+### Report Issues
+If the problem persists, please provide the following information:
+- VS Code/Cursor version
+- Extension version
+- Operating system
+- Error message screenshots
+- Console logs
+- Configuration information (hide sensitive data)
+
+---
+
+**Most issues can be resolved by restarting the editor or reinstalling the extension** 🔄
+
+---
+
+<div align="center">
+
+**[⬆️ Back to Top](#git-work-summary-troubleshooting-guide)**
+
+</div> 
