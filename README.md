@@ -38,7 +38,6 @@
 2. **填写必需配置**
    ```
    ✅ AI API Key: [粘贴您的API Key]
-   ✅ 上报接口URL: https://your-api.com/work-summary
    ```
 
 3. **可选配置调整**

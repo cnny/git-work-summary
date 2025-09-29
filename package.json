@@ -2,11 +2,12 @@
   "name": "git-work-summary",
   "displayName": "Git Work Summary",
   "description": "定时提取 git 变更并生成工作总结",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "Cann",
   "author": {
     "name": "cnny"
   },
+  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/cnny/git-work-summary"
@@ -83,7 +84,6 @@
         "title": "Generate Weekly Report for Period",
         "category": "Git Work Summary"
       },
-
       {
         "command": "gitWorkSummary.resetProcessedCommits",
         "title": "Reset Processed Commits",
@@ -160,7 +160,10 @@
         },
         "gitWorkSummary.aiProvider": {
           "type": "string",
-          "enum": ["deepseek", "openai"],
+          "enum": [
+            "deepseek",
+            "openai"
+          ],
           "default": "deepseek",
           "description": "AI 服务提供商"
         },
@@ -223,7 +226,6 @@
           "default": true,
           "description": "扫描所有本地分支的提交（适用于多分支开发）"
         },
-
         "gitWorkSummary.enableWeeklyReport": {
           "type": "boolean",
           "default": true,
@@ -242,8 +244,24 @@
         "gitWorkSummary.weekStartDay": {
           "type": "number",
           "default": 1,
-          "enum": [0, 1, 2, 3, 4, 5, 6],
-          "enumDescriptions": ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "enumDescriptions": [
+            "周日",
+            "周一",
+            "周二",
+            "周三",
+            "周四",
+            "周五",
+            "周六"
+          ],
           "description": "周报起始日期（0=周日, 1=周一, ..., 6=周六）。周一到周五：设为1；周五到周四：设为5"
         },
         "gitWorkSummary.enableMultiProject": {
@@ -273,12 +291,13 @@
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
     "@types/node": "18.x",
+    "@types/vscode": "^1.74.0",
+    "sharp": "^0.34.4",
     "typescript": "^4.9.4"
   },
   "dependencies": {
     "axios": "^1.6.0",
     "simple-git": "^3.20.0"
   }
-} 
+}
